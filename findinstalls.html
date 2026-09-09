@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Find Install</title>
+<style>
+body{font-family:-apple-system,sans-serif;background:#0b1420;color:#e8eef4;margin:0;padding:40px 20px;}
+.wrap{max-width:480px;margin:0 auto;}
+h1{font-size:1.4rem;margin:0 0 20px;}
+input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #2a3a4a;background:#141f2a;color:#e8eef4;font-size:1rem;box-sizing:border-box;}
+button{margin-top:10px;padding:10px 18px;border-radius:10px;border:none;background:#5b8cff;color:#fff;font-size:.95rem;cursor:pointer;}
+#result{margin-top:20px;padding:16px;border-radius:12px;background:#141f2a;border:1px solid #2a3a4a;display:none;}
+#result .name{font-weight:700;font-size:1.1rem;margin-bottom:6px;}
+#result .desc{color:#8fa3b8;font-size:.9rem;}
+.err{color:#e0937a;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Find Install</h1>
+<input id="idInput" placeholder="Enter install-id, e.g. 28387a164997aec6" autofocus>
+<button id="goBtn">Look up</button>
+<div id="result"></div>
+</div>
+<script>
+async function lookup(){
+  const id = document.getElementById('idInput').value.trim();
+  const result = document.getElementById('result');
+  if (!id){ result.style.display='none'; return; }
+  result.style.display = 'block';
+  result.innerHTML = 'Looking up...';
+  try {
+    const tunnelUrl = (await (await fetch('tunnel-url.txt')).text()).trim();
+    const list = await (await fetch(tunnelUrl + '/api/list')).json();
+    const match = list.find(p => p.install_id === id);
+    if (!match){
+      result.innerHTML = '<span class="err">No package found for that install-id.</span>';
+      return;
+    }
+    result.innerHTML = `<div class="name">${match.name}</div><div class="desc">${match.description}</div>`;
+  } catch (e) {
+    result.innerHTML = '<span class="err">Lookup failed — try again.</span>';
+  }
+}
+document.getElementById('goBtn').addEventListener('click', lookup);
+document.getElementById('idInput').addEventListener('keydown', e => { if (e.key === 'Enter') lookup(); });
+</script>
+</body>
+</html>
