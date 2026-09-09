@@ -1,7 +1,7 @@
-// dockerpatch server — serves the package catalog (/api/list) and per-package
-// info endpoints. Each package's info endpoint returns a plain-text GitHub
-// raw URL pointing at the actual install script; the "docker install"
-// wrapper downloads and runs that script.
+// dockerpatch server — serves the package catalog (/api/list), per-package
+// info endpoints (/api/info/<name>), and the actual install script text
+// files (/scripts/<name>.txt) itself. The "docker install" wrapper fetches
+// the catalog, then the info URL, then the script text, and runs it.
 package main
 
 import (
@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 type catalogEntry struct {
@@ -24,12 +25,12 @@ type Package struct {
 	Description string `json:"description"`
 	InstallID   string `json:"install_id"`
 	InfoURL     string `json:"info_url"` // relative path on this server; GET returns plain-text script URL
-	scriptURL   string
+	scriptURL   string // also relative to this server, e.g. "/scripts/webui.txt"
 }
 
-const rawBase = "https://raw.githubusercontent.com/Luishae07/dockerpatch/main/"
-
 var packages = map[string]*Package{}
+
+var scriptsDir = "scripts"
 
 func genID() string {
 	b := make([]byte, 8)
@@ -55,7 +56,7 @@ func loadCatalog(path string) error {
 			Description: e.Description,
 			InstallID:   genID(),
 			InfoURL:     "/api/info/" + e.Name,
-			scriptURL:   rawBase + e.Script,
+			scriptURL:   "/scripts/" + e.Name + ".txt",
 		}
 	}
 	return nil
@@ -83,6 +84,23 @@ func handleInfo(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(p.scriptURL))
 }
 
+func handleScript(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Path[len("/scripts/"):]
+	// name arrives as "<pkg>.txt" — strip to the bare package name and
+	// re-validate against the catalog so we never serve arbitrary files.
+	base := name
+	if ext := filepath.Ext(base); ext == ".txt" {
+		base = base[:len(base)-len(ext)]
+	}
+	if _, ok := packages[base]; !ok {
+		http.Error(w, "script not found", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	http.ServeFile(w, r, filepath.Join(scriptsDir, base+".txt"))
+}
+
 func main() {
 	catalogPath := os.Getenv("DOCKERPATCH_CATALOG")
 	if catalogPath == "" {
@@ -93,6 +111,10 @@ func main() {
 	}
 	log.Printf("loaded %d packages from %s", len(packages), catalogPath)
 
+	if v := os.Getenv("DOCKERPATCH_SCRIPTS_DIR"); v != "" {
+		scriptsDir = v
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8940"
@@ -100,6 +122,7 @@ func main() {
 
 	http.HandleFunc("/api/list", handleList)
 	http.HandleFunc("/api/info/", handleInfo)
+	http.HandleFunc("/scripts/", handleScript)
 
 	log.Printf("dockerpatch server listening on :%s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))

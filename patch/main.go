@@ -101,6 +101,10 @@ func doInstall(name string) error {
 	if err != nil {
 		return fmt.Errorf("could not fetch package info: %w", err)
 	}
+	// scriptURL is relative to the dockerpatch server (e.g. "/scripts/webui.txt")
+	if !strings.HasPrefix(scriptURL, "http://") && !strings.HasPrefix(scriptURL, "https://") {
+		scriptURL = tunnelURL + scriptURL
+	}
 	fmt.Printf("dockerpatch: downloading install script from %s...\n", scriptURL)
 
 	script, err := fetch(scriptURL)
