@@ -5,22 +5,96 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Find Install</title>
 <style>
-body{font-family:-apple-system,sans-serif;background:#0b1420;color:#e8eef4;margin:0;padding:40px 20px;}
-.wrap{max-width:480px;margin:0 auto;}
-h1{font-size:1.4rem;margin:0 0 20px;}
-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #2a3a4a;background:#141f2a;color:#e8eef4;font-size:1rem;box-sizing:border-box;}
-button{margin-top:10px;padding:10px 18px;border-radius:10px;border:none;background:#5b8cff;color:#fff;font-size:.95rem;cursor:pointer;}
-#result{margin-top:20px;padding:16px;border-radius:12px;background:#141f2a;border:1px solid #2a3a4a;display:none;}
-#result .name{font-weight:700;font-size:1.1rem;margin-bottom:6px;}
-#result .desc{color:#8fa3b8;font-size:.9rem;}
-.err{color:#e0937a;}
+:root{
+  --bg:#0a0c11; --card:#141821; --card-hover:#181d28;
+  --border:#242a36; --border-hover:#323a4a;
+  --txt:#eef1f7; --sub:#8b93a6; --sub2:#5c6479;
+  --acc:#6b8cff; --acc2:#9b6bff;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(107,140,255,0.14), transparent 60%),
+    radial-gradient(1000px 500px at 90% 10%, rgba(155,107,255,0.12), transparent 60%),
+    var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+}
+.wrap{max-width:460px; width:100%;}
+.brand{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px;}
+.brand-mark{
+  width:36px; height:36px; border-radius:10px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; box-shadow:0 6px 20px rgba(107,140,255,0.35);
+}
+h1{font-size:22px; margin:0; font-weight:700; letter-spacing:-0.3px;}
+.sub{
+  text-align:center; color:var(--sub); font-size:13.5px;
+  margin:0 0 28px; line-height:1.5;
+}
+.searchbar{
+  display:flex; background:var(--card); border:1px solid var(--border);
+  border-radius:14px; transition:border-color .15s, box-shadow .15s;
+}
+.searchbar:focus-within{border-color:var(--acc); box-shadow:0 0 0 4px rgba(107,140,255,0.14);}
+.searchbar svg{flex-shrink:0; margin:0 4px 0 16px; align-self:center; opacity:.45;}
+input{
+  flex:1; padding:15px 12px; border:none; background:transparent;
+  color:var(--txt); font-size:15px; outline:none; font-family:"SF Mono",ui-monospace,monospace;
+}
+input::placeholder{color:var(--sub2); font-family:inherit;}
+button.go{
+  margin:6px 6px 6px 0; padding:0 22px; border-radius:10px; border:none;
+  background:linear-gradient(135deg,var(--acc),var(--acc2)); color:#fff;
+  font-size:14px; font-weight:600; cursor:pointer; transition:opacity .15s, transform .1s;
+}
+button.go:hover{opacity:.92;}
+button.go:active{transform:scale(.96);}
+#result{margin-top:18px; display:none;}
+.card{
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:20px 22px; animation:fadein .25s ease;
+}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+.card .name{
+  font-size:19px; font-weight:700; margin-bottom:6px;
+  display:flex; align-items:center; gap:8px;
+}
+.card .name::before{
+  content:''; width:8px; height:8px; border-radius:50%;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  flex-shrink:0; box-shadow:0 0 8px rgba(107,140,255,0.6);
+}
+.card .desc{color:var(--sub); font-size:14px; line-height:1.5;}
+.card .id{
+  margin-top:14px; padding-top:14px; border-top:1px solid var(--border);
+  font-family:"SF Mono",ui-monospace,monospace; font-size:11.5px; color:var(--sub2);
+}
+.err{
+  color:#e0937a; font-size:13.5px; background:rgba(224,147,122,0.08);
+  border:1px solid rgba(224,147,122,0.2); border-radius:14px; padding:16px 18px;
+}
+.loading{color:var(--sub); text-align:center; padding:20px 0; font-size:13.5px;}
+.loading::after{
+  content:''; display:inline-block; width:13px; height:13px; margin-left:8px;
+  border:2px solid var(--sub2); border-top-color:var(--acc); border-radius:50%;
+  animation:spin .7s linear infinite; vertical-align:middle;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>Find Install</h1>
-<input id="idInput" placeholder="Enter install-id, e.g. 28387a164997aec6" autofocus>
-<button id="goBtn">Look up</button>
+<div class="brand"><div class="brand-mark">📦</div><h1>Find Install</h1></div>
+<p class="sub">Look up a dockerpatch package by its install-id</p>
+<div class="searchbar">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input id="idInput" placeholder="e.g. 28387a164997aec6" autofocus autocomplete="off" spellcheck="false">
+<button class="go" id="goBtn">Look up</button>
+</div>
 <div id="result"></div>
 </div>
 <script>
@@ -29,18 +103,23 @@ async function lookup(){
   const result = document.getElementById('result');
   if (!id){ result.style.display='none'; return; }
   result.style.display = 'block';
-  result.innerHTML = 'Looking up...';
+  result.innerHTML = '<div class="loading">Searching</div>';
   try {
     const tunnelUrl = (await (await fetch('tunnel-url.txt')).text()).trim();
     const list = await (await fetch(tunnelUrl + '/api/list')).json();
     const match = list.find(p => p.install_id === id);
     if (!match){
-      result.innerHTML = '<span class="err">No package found for that install-id.</span>';
+      result.innerHTML = '<div class="err">No package found for that install-id.</div>';
       return;
     }
-    result.innerHTML = `<div class="name">${match.name}</div><div class="desc">${match.description}</div>`;
+    result.innerHTML = `
+      <div class="card">
+        <div class="name">${match.name}</div>
+        <div class="desc">${match.description}</div>
+        <div class="id">${match.install_id}</div>
+      </div>`;
   } catch (e) {
-    result.innerHTML = '<span class="err">Lookup failed — try again.</span>';
+    result.innerHTML = '<div class="err">Lookup failed — try again.</div>';
   }
 }
 document.getElementById('goBtn').addEventListener('click', lookup);
