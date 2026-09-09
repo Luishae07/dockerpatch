@@ -5,7 +5,7 @@
 package main
 
 import (
-	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"log"
@@ -32,10 +32,11 @@ var packages = map[string]*Package{}
 
 var scriptsDir = "scripts"
 
-func genID() string {
-	b := make([]byte, 8)
-	rand.Read(b)
-	return hex.EncodeToString(b)
+// genID is deterministic (derived from the package name) so install-ids
+// stay stable across server restarts instead of changing every time.
+func genID(name string) string {
+	sum := sha256.Sum256([]byte(name))
+	return hex.EncodeToString(sum[:8])
 }
 
 func loadCatalog(path string) error {
@@ -54,7 +55,7 @@ func loadCatalog(path string) error {
 		packages[e.Name] = &Package{
 			Name:        e.Name,
 			Description: e.Description,
-			InstallID:   genID(),
+			InstallID:   genID(e.Name),
 			InfoURL:     "/api/info/" + e.Name,
 			scriptURL:   "/scripts/" + e.Name + ".txt",
 		}
