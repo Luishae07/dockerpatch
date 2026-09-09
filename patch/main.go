@@ -11,20 +11,34 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"syscall"
 )
 
 const tunnelURLPageURL = "https://luishae07.github.io/dockerpatch/tunnel-url.txt"
 
-var realDockerPath = envOr("DOCKERPATCH_REAL_DOCKER", "/usr/bin/docker-real")
-
-func envOr(key, def string) string {
-	if v := os.Getenv(key); v != "" {
+// The real docker binary always lives next to this wrapper, named
+// "docker-real" (that's where install.sh puts it) - resolved relative to
+// our own executable path so this works regardless of where docker is
+// installed (/usr/bin, OrbStack's ~/.orbstack/bin, Homebrew, etc.),
+// unless overridden explicitly via DOCKERPATCH_REAL_DOCKER.
+func resolveRealDockerPath() string {
+	if v := os.Getenv("DOCKERPATCH_REAL_DOCKER"); v != "" {
 		return v
 	}
-	return def
+	self, err := os.Executable()
+	if err != nil {
+		return "/usr/bin/docker-real"
+	}
+	self, err = filepath.EvalSymlinks(self)
+	if err != nil {
+		return "/usr/bin/docker-real"
+	}
+	return filepath.Join(filepath.Dir(self), "docker-real")
 }
+
+var realDockerPath = resolveRealDockerPath()
 
 type pkgEntry struct {
 	Name      string `json:"name"`
