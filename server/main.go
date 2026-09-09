@@ -13,12 +13,21 @@ import (
 	"os"
 )
 
-type Package struct {
-	Name      string `json:"name"`
-	InstallID string `json:"install_id"`
-	InfoURL   string `json:"info_url"` // relative path on this server; GET returns plain-text script URL
-	scriptURL string // the actual GitHub raw URL, not exposed directly in /api/list
+type catalogEntry struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Script      string `json:"script"` // relative path in the repo, e.g. "packages/webui.sh"
 }
+
+type Package struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	InstallID   string `json:"install_id"`
+	InfoURL     string `json:"info_url"` // relative path on this server; GET returns plain-text script URL
+	scriptURL   string
+}
+
+const rawBase = "https://raw.githubusercontent.com/Luishae07/dockerpatch/main/"
 
 var packages = map[string]*Package{}
 
@@ -28,14 +37,28 @@ func genID() string {
 	return hex.EncodeToString(b)
 }
 
-func registerPackage(name, scriptURL string) {
-	id := genID()
-	packages[name] = &Package{
-		Name:      name,
-		InstallID: id,
-		InfoURL:   "/api/info/" + name,
-		scriptURL: scriptURL,
+func loadCatalog(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
 	}
+	defer f.Close()
+
+	var entries []catalogEntry
+	if err := json.NewDecoder(f).Decode(&entries); err != nil {
+		return err
+	}
+
+	for _, e := range entries {
+		packages[e.Name] = &Package{
+			Name:        e.Name,
+			Description: e.Description,
+			InstallID:   genID(),
+			InfoURL:     "/api/info/" + e.Name,
+			scriptURL:   rawBase + e.Script,
+		}
+	}
+	return nil
 }
 
 func handleList(w http.ResponseWriter, r *http.Request) {
@@ -61,8 +84,14 @@ func handleInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// Seed catalog — real entries point at raw.githubusercontent.com scripts.
-	registerPackage("webui", "https://raw.githubusercontent.com/Luishae07/dockerpatch/main/packages/webui.sh")
+	catalogPath := os.Getenv("DOCKERPATCH_CATALOG")
+	if catalogPath == "" {
+		catalogPath = "packages.json"
+	}
+	if err := loadCatalog(catalogPath); err != nil {
+		log.Fatalf("failed to load catalog from %s: %v", catalogPath, err)
+	}
+	log.Printf("loaded %d packages from %s", len(packages), catalogPath)
 
 	port := os.Getenv("PORT")
 	if port == "" {

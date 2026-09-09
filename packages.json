@@ -1,0 +1,957 @@
+[
+  {
+    "name": "webui",
+    "description": "ChatGPT-like UI for local LLMs",
+    "script": "packages/webui.sh"
+  },
+  {
+    "name": "portainer",
+    "description": "Docker management UI",
+    "script": "packages/portainer.sh"
+  },
+  {
+    "name": "uptimekuma",
+    "description": "Status/uptime monitoring dashboard",
+    "script": "packages/uptimekuma.sh"
+  },
+  {
+    "name": "vaultwarden",
+    "description": "Self-hosted Bitwarden-compatible password manager",
+    "script": "packages/vaultwarden.sh"
+  },
+  {
+    "name": "nginxproxymanager",
+    "description": "Nginx reverse proxy with UI",
+    "script": "packages/nginxproxymanager.sh"
+  },
+  {
+    "name": "watchtower",
+    "description": "Auto-updates running containers",
+    "script": "packages/watchtower.sh"
+  },
+  {
+    "name": "pihole",
+    "description": "Network-wide ad blocker/DNS",
+    "script": "packages/pihole.sh"
+  },
+  {
+    "name": "filebrowser",
+    "description": "Web file manager",
+    "script": "packages/filebrowser.sh"
+  },
+  {
+    "name": "codeserver",
+    "description": "VS Code in the browser",
+    "script": "packages/codeserver.sh"
+  },
+  {
+    "name": "homepage",
+    "description": "Customizable dashboard/homepage",
+    "script": "packages/homepage.sh"
+  },
+  {
+    "name": "adminer",
+    "description": "Database management UI",
+    "script": "packages/adminer.sh"
+  },
+  {
+    "name": "grafana",
+    "description": "Metrics dashboards",
+    "script": "packages/grafana.sh"
+  },
+  {
+    "name": "n8n",
+    "description": "Workflow automation",
+    "script": "packages/n8n.sh"
+  },
+  {
+    "name": "prometheus",
+    "description": "Metrics collection/monitoring",
+    "script": "packages/prometheus.sh"
+  },
+  {
+    "name": "mealie",
+    "description": "Recipe manager",
+    "script": "packages/mealie.sh"
+  },
+  {
+    "name": "jellyfin",
+    "description": "Media server",
+    "script": "packages/jellyfin.sh"
+  },
+  {
+    "name": "plex",
+    "description": "Media server",
+    "script": "packages/plex.sh"
+  },
+  {
+    "name": "nextcloud",
+    "description": "Self-hosted cloud storage/office",
+    "script": "packages/nextcloud.sh"
+  },
+  {
+    "name": "photoprism",
+    "description": "AI-powered photo library",
+    "script": "packages/photoprism.sh"
+  },
+  {
+    "name": "immich",
+    "description": "Self-hosted photo/video backup",
+    "script": "packages/immich.sh"
+  },
+  {
+    "name": "gitea",
+    "description": "Self-hosted Git service",
+    "script": "packages/gitea.sh"
+  },
+  {
+    "name": "gitlab",
+    "description": "Self-hosted DevOps platform",
+    "script": "packages/gitlab.sh"
+  },
+  {
+    "name": "drone",
+    "description": "CI/CD server",
+    "script": "packages/drone.sh"
+  },
+  {
+    "name": "jenkins",
+    "description": "CI/CD automation server",
+    "script": "packages/jenkins.sh"
+  },
+  {
+    "name": "sonarqube",
+    "description": "Code quality/static analysis",
+    "script": "packages/sonarqube.sh"
+  },
+  {
+    "name": "verdaccio",
+    "description": "Private npm registry",
+    "script": "packages/verdaccio.sh"
+  },
+  {
+    "name": "registry",
+    "description": "Private Docker image registry",
+    "script": "packages/registry.sh"
+  },
+  {
+    "name": "minio",
+    "description": "S3-compatible object storage",
+    "script": "packages/minio.sh"
+  },
+  {
+    "name": "seafile",
+    "description": "File sync and share",
+    "script": "packages/seafile.sh"
+  },
+  {
+    "name": "syncthing",
+    "description": "Continuous file sync between devices",
+    "script": "packages/syncthing.sh"
+  },
+  {
+    "name": "resilio",
+    "description": "P2P file sync",
+    "script": "packages/resilio.sh"
+  },
+  {
+    "name": "transmission",
+    "description": "BitTorrent client",
+    "script": "packages/transmission.sh"
+  },
+  {
+    "name": "qbittorrent",
+    "description": "BitTorrent client",
+    "script": "packages/qbittorrent.sh"
+  },
+  {
+    "name": "sabnzbd",
+    "description": "Usenet download client",
+    "script": "packages/sabnzbd.sh"
+  },
+  {
+    "name": "radarr",
+    "description": "Movie collection manager",
+    "script": "packages/radarr.sh"
+  },
+  {
+    "name": "sonarr",
+    "description": "TV collection manager",
+    "script": "packages/sonarr.sh"
+  },
+  {
+    "name": "lidarr",
+    "description": "Music collection manager",
+    "script": "packages/lidarr.sh"
+  },
+  {
+    "name": "bazarr",
+    "description": "Subtitle manager",
+    "script": "packages/bazarr.sh"
+  },
+  {
+    "name": "prowlarr",
+    "description": "Indexer manager for *arr apps",
+    "script": "packages/prowlarr.sh"
+  },
+  {
+    "name": "overseerr",
+    "description": "Media request management",
+    "script": "packages/overseerr.sh"
+  },
+  {
+    "name": "tautulli",
+    "description": "Plex monitoring/stats",
+    "script": "packages/tautulli.sh"
+  },
+  {
+    "name": "homeassistant",
+    "description": "Home automation platform",
+    "script": "packages/homeassistant.sh"
+  },
+  {
+    "name": "nodered",
+    "description": "Flow-based automation tool",
+    "script": "packages/nodered.sh"
+  },
+  {
+    "name": "mosquitto",
+    "description": "MQTT message broker",
+    "script": "packages/mosquitto.sh"
+  },
+  {
+    "name": "zigbee2mqtt",
+    "description": "Zigbee to MQTT bridge",
+    "script": "packages/zigbee2mqtt.sh"
+  },
+  {
+    "name": "esphome",
+    "description": "ESP8266/32 firmware manager",
+    "script": "packages/esphome.sh"
+  },
+  {
+    "name": "wireguard",
+    "description": "VPN server",
+    "script": "packages/wireguard.sh"
+  },
+  {
+    "name": "openvpn",
+    "description": "VPN server",
+    "script": "packages/openvpn.sh"
+  },
+  {
+    "name": "tailscale",
+    "description": "Mesh VPN",
+    "script": "packages/tailscale.sh"
+  },
+  {
+    "name": "headscale",
+    "description": "Self-hosted Tailscale control server",
+    "script": "packages/headscale.sh"
+  },
+  {
+    "name": "guacamole",
+    "description": "Remote desktop gateway (RDP/VNC/SSH in browser)",
+    "script": "packages/guacamole.sh"
+  },
+  {
+    "name": "rustdesk",
+    "description": "Self-hosted remote desktop server",
+    "script": "packages/rustdesk.sh"
+  },
+  {
+    "name": "healthchecks",
+    "description": "Cron job monitoring",
+    "script": "packages/healthchecks.sh"
+  },
+  {
+    "name": "changedetection",
+    "description": "Website change detection",
+    "script": "packages/changedetection.sh"
+  },
+  {
+    "name": "freshrss",
+    "description": "RSS feed reader",
+    "script": "packages/freshrss.sh"
+  },
+  {
+    "name": "miniflux",
+    "description": "Minimalist RSS reader",
+    "script": "packages/miniflux.sh"
+  },
+  {
+    "name": "wallabag",
+    "description": "Read-it-later article saver",
+    "script": "packages/wallabag.sh"
+  },
+  {
+    "name": "linkding",
+    "description": "Bookmark manager",
+    "script": "packages/linkding.sh"
+  },
+  {
+    "name": "bookstack",
+    "description": "Wiki/documentation platform",
+    "script": "packages/bookstack.sh"
+  },
+  {
+    "name": "outline",
+    "description": "Team knowledge base/wiki",
+    "script": "packages/outline.sh"
+  },
+  {
+    "name": "wikijs",
+    "description": "Wiki platform",
+    "script": "packages/wikijs.sh"
+  },
+  {
+    "name": "dokuwiki",
+    "description": "Flat-file wiki",
+    "script": "packages/dokuwiki.sh"
+  },
+  {
+    "name": "trilium",
+    "description": "Personal knowledge base",
+    "script": "packages/trilium.sh"
+  },
+  {
+    "name": "joplin",
+    "description": "Note sync server for Joplin app",
+    "script": "packages/joplin.sh"
+  },
+  {
+    "name": "standardnotes",
+    "description": "End-to-end encrypted notes",
+    "script": "packages/standardnotes.sh"
+  },
+  {
+    "name": "etherpad",
+    "description": "Real-time collaborative text editor",
+    "script": "packages/etherpad.sh"
+  },
+  {
+    "name": "hedgedoc",
+    "description": "Collaborative markdown editor",
+    "script": "packages/hedgedoc.sh"
+  },
+  {
+    "name": "firefly",
+    "description": "Personal finance manager",
+    "script": "packages/firefly.sh"
+  },
+  {
+    "name": "actualbudget",
+    "description": "Personal budgeting app",
+    "script": "packages/actualbudget.sh"
+  },
+  {
+    "name": "paperless",
+    "description": "Document management/OCR",
+    "script": "packages/paperless.sh"
+  },
+  {
+    "name": "bookstackapp",
+    "description": "Documentation wiki (alt image)",
+    "script": "packages/bookstackapp.sh"
+  },
+  {
+    "name": "kanboard",
+    "description": "Kanban project management",
+    "script": "packages/kanboard.sh"
+  },
+  {
+    "name": "wekan",
+    "description": "Trello-like kanban board",
+    "script": "packages/wekan.sh"
+  },
+  {
+    "name": "planka",
+    "description": "Kanban board (Trello alternative)",
+    "script": "packages/planka.sh"
+  },
+  {
+    "name": "focalboard",
+    "description": "Project management/notes",
+    "script": "packages/focalboard.sh"
+  },
+  {
+    "name": "taiga",
+    "description": "Agile project management",
+    "script": "packages/taiga.sh"
+  },
+  {
+    "name": "redmine",
+    "description": "Project management/issue tracking",
+    "script": "packages/redmine.sh"
+  },
+  {
+    "name": "openproject",
+    "description": "Project management platform",
+    "script": "packages/openproject.sh"
+  },
+  {
+    "name": "mattermost",
+    "description": "Team chat (Slack alternative)",
+    "script": "packages/mattermost.sh"
+  },
+  {
+    "name": "rocketchat",
+    "description": "Team chat platform",
+    "script": "packages/rocketchat.sh"
+  },
+  {
+    "name": "matrix",
+    "description": "Matrix homeserver (federated chat)",
+    "script": "packages/matrix.sh"
+  },
+  {
+    "name": "element",
+    "description": "Matrix chat client web UI",
+    "script": "packages/element.sh"
+  },
+  {
+    "name": "jitsi",
+    "description": "Self-hosted video conferencing",
+    "script": "packages/jitsi.sh"
+  },
+  {
+    "name": "bigbluebutton",
+    "description": "Web conferencing for online learning",
+    "script": "packages/bigbluebutton.sh"
+  },
+  {
+    "name": "discourse",
+    "description": "Forum/discussion platform",
+    "script": "packages/discourse.sh"
+  },
+  {
+    "name": "flarum",
+    "description": "Lightweight forum software",
+    "script": "packages/flarum.sh"
+  },
+  {
+    "name": "nodebb",
+    "description": "Forum platform",
+    "script": "packages/nodebb.sh"
+  },
+  {
+    "name": "ghost",
+    "description": "Blogging/publishing platform",
+    "script": "packages/ghost.sh"
+  },
+  {
+    "name": "wordpress",
+    "description": "CMS/blogging platform",
+    "script": "packages/wordpress.sh"
+  },
+  {
+    "name": "strapi",
+    "description": "Headless CMS",
+    "script": "packages/strapi.sh"
+  },
+  {
+    "name": "directus",
+    "description": "Headless CMS/data platform",
+    "script": "packages/directus.sh"
+  },
+  {
+    "name": "payload",
+    "description": "Headless CMS (TypeScript)",
+    "script": "packages/payload.sh"
+  },
+  {
+    "name": "umami",
+    "description": "Privacy-focused website analytics",
+    "script": "packages/umami.sh"
+  },
+  {
+    "name": "plausible",
+    "description": "Privacy-focused website analytics",
+    "script": "packages/plausible.sh"
+  },
+  {
+    "name": "matomo",
+    "description": "Web analytics platform",
+    "script": "packages/matomo.sh"
+  },
+  {
+    "name": "uptimerobot",
+    "description": "Uptime monitoring (duplicate image, alt name)",
+    "script": "packages/uptimerobot.sh"
+  },
+  {
+    "name": "netdata",
+    "description": "Real-time system performance monitoring",
+    "script": "packages/netdata.sh"
+  },
+  {
+    "name": "cadvisor",
+    "description": "Container resource usage monitoring",
+    "script": "packages/cadvisor.sh"
+  },
+  {
+    "name": "dozzle",
+    "description": "Real-time Docker log viewer",
+    "script": "packages/dozzle.sh"
+  },
+  {
+    "name": "glances",
+    "description": "System monitoring dashboard",
+    "script": "packages/glances.sh"
+  },
+  {
+    "name": "speedtest",
+    "description": "Internet speed test tracking",
+    "script": "packages/speedtest.sh"
+  },
+  {
+    "name": "librespeed",
+    "description": "Self-hosted speed test",
+    "script": "packages/librespeed.sh"
+  },
+  {
+    "name": "statping",
+    "description": "Status page generator",
+    "script": "packages/statping.sh"
+  },
+  {
+    "name": "cachet",
+    "description": "Status page system",
+    "script": "packages/cachet.sh"
+  },
+  {
+    "name": "gatus",
+    "description": "Health check/status page",
+    "script": "packages/gatus.sh"
+  },
+  {
+    "name": "influxdb",
+    "description": "Time-series database",
+    "script": "packages/influxdb.sh"
+  },
+  {
+    "name": "timescaledb",
+    "description": "Time-series Postgres extension",
+    "script": "packages/timescaledb.sh"
+  },
+  {
+    "name": "postgres",
+    "description": "Relational database",
+    "script": "packages/postgres.sh"
+  },
+  {
+    "name": "mysql",
+    "description": "Relational database",
+    "script": "packages/mysql.sh"
+  },
+  {
+    "name": "mariadb",
+    "description": "Relational database (MySQL fork)",
+    "script": "packages/mariadb.sh"
+  },
+  {
+    "name": "mongodb",
+    "description": "Document database",
+    "script": "packages/mongodb.sh"
+  },
+  {
+    "name": "redis",
+    "description": "In-memory key-value store",
+    "script": "packages/redis.sh"
+  },
+  {
+    "name": "couchdb",
+    "description": "Document-oriented database",
+    "script": "packages/couchdb.sh"
+  },
+  {
+    "name": "cockroachdb",
+    "description": "Distributed SQL database",
+    "script": "packages/cockroachdb.sh"
+  },
+  {
+    "name": "neo4j",
+    "description": "Graph database",
+    "script": "packages/neo4j.sh"
+  },
+  {
+    "name": "clickhouse",
+    "description": "Columnar analytics database",
+    "script": "packages/clickhouse.sh"
+  },
+  {
+    "name": "elasticsearch",
+    "description": "Search/analytics engine",
+    "script": "packages/elasticsearch.sh"
+  },
+  {
+    "name": "opensearch",
+    "description": "Search/analytics engine (Elastic fork)",
+    "script": "packages/opensearch.sh"
+  },
+  {
+    "name": "meilisearch",
+    "description": "Lightweight search engine",
+    "script": "packages/meilisearch.sh"
+  },
+  {
+    "name": "typesense",
+    "description": "Fast search engine",
+    "script": "packages/typesense.sh"
+  },
+  {
+    "name": "qdrant",
+    "description": "Vector database",
+    "script": "packages/qdrant.sh"
+  },
+  {
+    "name": "weaviate",
+    "description": "Vector database for AI apps",
+    "script": "packages/weaviate.sh"
+  },
+  {
+    "name": "chromadb",
+    "description": "Vector database for embeddings",
+    "script": "packages/chromadb.sh"
+  },
+  {
+    "name": "ollama",
+    "description": "Local LLM runner",
+    "script": "packages/ollama.sh"
+  },
+  {
+    "name": "localai",
+    "description": "Local OpenAI-compatible API",
+    "script": "packages/localai.sh"
+  },
+  {
+    "name": "langflow",
+    "description": "Visual LLM/agent workflow builder",
+    "script": "packages/langflow.sh"
+  },
+  {
+    "name": "flowise",
+    "description": "Visual LLM app builder",
+    "script": "packages/flowise.sh"
+  },
+  {
+    "name": "searxng",
+    "description": "Privacy-respecting metasearch engine",
+    "script": "packages/searxng.sh"
+  },
+  {
+    "name": "kutt",
+    "description": "URL shortener",
+    "script": "packages/kutt.sh"
+  },
+  {
+    "name": "shlink",
+    "description": "URL shortener with API",
+    "script": "packages/shlink.sh"
+  },
+  {
+    "name": "privatebin",
+    "description": "Encrypted pastebin",
+    "script": "packages/privatebin.sh"
+  },
+  {
+    "name": "cryptpad",
+    "description": "Encrypted collaborative office suite",
+    "script": "packages/cryptpad.sh"
+  },
+  {
+    "name": "onlyoffice",
+    "description": "Online office document editor",
+    "script": "packages/onlyoffice.sh"
+  },
+  {
+    "name": "collabora",
+    "description": "LibreOffice-based online editor",
+    "script": "packages/collabora.sh"
+  },
+  {
+    "name": "stirling",
+    "description": "PDF manipulation toolkit",
+    "script": "packages/stirling.sh"
+  },
+  {
+    "name": "calibreweb",
+    "description": "Ebook library web UI",
+    "script": "packages/calibreweb.sh"
+  },
+  {
+    "name": "kavita",
+    "description": "Ebook/comic reading server",
+    "script": "packages/kavita.sh"
+  },
+  {
+    "name": "audiobookshelf",
+    "description": "Audiobook/podcast server",
+    "script": "packages/audiobookshelf.sh"
+  },
+  {
+    "name": "navidrome",
+    "description": "Self-hosted music streaming",
+    "script": "packages/navidrome.sh"
+  },
+  {
+    "name": "airsonic",
+    "description": "Music streaming server",
+    "script": "packages/airsonic.sh"
+  },
+  {
+    "name": "koel",
+    "description": "Personal music streaming server",
+    "script": "packages/koel.sh"
+  },
+  {
+    "name": "funkwhale",
+    "description": "Federated music streaming",
+    "script": "packages/funkwhale.sh"
+  },
+  {
+    "name": "piwigo",
+    "description": "Photo gallery software",
+    "script": "packages/piwigo.sh"
+  },
+  {
+    "name": "lychee",
+    "description": "Photo management system",
+    "script": "packages/lychee.sh"
+  },
+  {
+    "name": "librephotos",
+    "description": "AI-powered self-hosted photos",
+    "script": "packages/librephotos.sh"
+  },
+  {
+    "name": "shaarli",
+    "description": "Bookmark/link sharing",
+    "script": "packages/shaarli.sh"
+  },
+  {
+    "name": "wallabaghome",
+    "description": "Read-it-later app (alt image)",
+    "script": "packages/wallabaghome.sh"
+  },
+  {
+    "name": "mailu",
+    "description": "Self-hosted mail server suite",
+    "script": "packages/mailu.sh"
+  },
+  {
+    "name": "mailcow",
+    "description": "Full-featured mail server suite",
+    "script": "packages/mailcow.sh"
+  },
+  {
+    "name": "poste",
+    "description": "All-in-one mail server",
+    "script": "packages/poste.sh"
+  },
+  {
+    "name": "listmonk",
+    "description": "Newsletter/mailing list manager",
+    "script": "packages/listmonk.sh"
+  },
+  {
+    "name": "mailhog",
+    "description": "Email testing/dev SMTP catcher",
+    "script": "packages/mailhog.sh"
+  },
+  {
+    "name": "freescout",
+    "description": "Free helpdesk/shared inbox",
+    "script": "packages/freescout.sh"
+  },
+  {
+    "name": "chatwoot",
+    "description": "Customer support/live chat",
+    "script": "packages/chatwoot.sh"
+  },
+  {
+    "name": "zammad",
+    "description": "Helpdesk/customer support",
+    "script": "packages/zammad.sh"
+  },
+  {
+    "name": "uvdesk",
+    "description": "Open-source helpdesk",
+    "script": "packages/uvdesk.sh"
+  },
+  {
+    "name": "baserow",
+    "description": "No-code database (Airtable alternative)",
+    "script": "packages/baserow.sh"
+  },
+  {
+    "name": "nocodb",
+    "description": "No-code database platform",
+    "script": "packages/nocodb.sh"
+  },
+  {
+    "name": "appsmith",
+    "description": "Low-code app builder",
+    "script": "packages/appsmith.sh"
+  },
+  {
+    "name": "budibase",
+    "description": "Low-code app builder",
+    "script": "packages/budibase.sh"
+  },
+  {
+    "name": "windmill",
+    "description": "Developer platform for scripts/workflows",
+    "script": "packages/windmill.sh"
+  },
+  {
+    "name": "huginn",
+    "description": "Automation/agent-based workflow tool",
+    "script": "packages/huginn.sh"
+  },
+  {
+    "name": "activepieces",
+    "description": "No-code automation (Zapier alternative)",
+    "script": "packages/activepieces.sh"
+  },
+  {
+    "name": "automatisch",
+    "description": "Workflow automation (Zapier alternative)",
+    "script": "packages/automatisch.sh"
+  },
+  {
+    "name": "homarr",
+    "description": "Customizable server dashboard",
+    "script": "packages/homarr.sh"
+  },
+  {
+    "name": "dashy",
+    "description": "Self-hosted start page/dashboard",
+    "script": "packages/dashy.sh"
+  },
+  {
+    "name": "heimdall",
+    "description": "Application dashboard",
+    "script": "packages/heimdall.sh"
+  },
+  {
+    "name": "organizr",
+    "description": "Unified homelab dashboard",
+    "script": "packages/organizr.sh"
+  },
+  {
+    "name": "flame",
+    "description": "Start page/dashboard for self-hosted services",
+    "script": "packages/flame.sh"
+  },
+  {
+    "name": "librenms",
+    "description": "Network monitoring system",
+    "script": "packages/librenms.sh"
+  },
+  {
+    "name": "zabbix",
+    "description": "Enterprise network monitoring",
+    "script": "packages/zabbix.sh"
+  },
+  {
+    "name": "nagios",
+    "description": "Network/infra monitoring",
+    "script": "packages/nagios.sh"
+  },
+  {
+    "name": "checkmk",
+    "description": "IT infrastructure monitoring",
+    "script": "packages/checkmk.sh"
+  },
+  {
+    "name": "smokeping",
+    "description": "Network latency monitoring",
+    "script": "packages/smokeping.sh"
+  },
+  {
+    "name": "ntopng",
+    "description": "Network traffic monitoring",
+    "script": "packages/ntopng.sh"
+  },
+  {
+    "name": "suricata",
+    "description": "Network threat detection engine",
+    "script": "packages/suricata.sh"
+  },
+  {
+    "name": "crowdsec",
+    "description": "Collaborative intrusion detection",
+    "script": "packages/crowdsec.sh"
+  },
+  {
+    "name": "fail2ban",
+    "description": "Intrusion prevention (bans malicious IPs)",
+    "script": "packages/fail2ban.sh"
+  },
+  {
+    "name": "authelia",
+    "description": "Self-hosted SSO/2FA auth server",
+    "script": "packages/authelia.sh"
+  },
+  {
+    "name": "authentik",
+    "description": "Identity provider/SSO platform",
+    "script": "packages/authentik.sh"
+  },
+  {
+    "name": "keycloak",
+    "description": "Identity and access management",
+    "script": "packages/keycloak.sh"
+  },
+  {
+    "name": "openldap",
+    "description": "LDAP directory server",
+    "script": "packages/openldap.sh"
+  },
+  {
+    "name": "freeipa",
+    "description": "Identity management server",
+    "script": "packages/freeipa.sh"
+  },
+  {
+    "name": "pgadmin",
+    "description": "Postgres admin UI",
+    "script": "packages/pgadmin.sh"
+  },
+  {
+    "name": "phpmyadmin",
+    "description": "MySQL/MariaDB admin UI",
+    "script": "packages/phpmyadmin.sh"
+  },
+  {
+    "name": "mongoexpress",
+    "description": "MongoDB admin UI",
+    "script": "packages/mongoexpress.sh"
+  },
+  {
+    "name": "redisinsight",
+    "description": "Redis GUI/admin tool",
+    "script": "packages/redisinsight.sh"
+  },
+  {
+    "name": "dbeaver",
+    "description": "Universal database tool (web)",
+    "script": "packages/dbeaver.sh"
+  },
+  {
+    "name": "metabase",
+    "description": "Business intelligence/dashboards",
+    "script": "packages/metabase.sh"
+  },
+  {
+    "name": "superset",
+    "description": "Data exploration/visualization",
+    "script": "packages/superset.sh"
+  },
+  {
+    "name": "redash",
+    "description": "Data query/visualization tool",
+    "script": "packages/redash.sh"
+  }
+]

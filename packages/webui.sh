@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -e
-echo "Installing Open WebUI..."
-docker run -d -p 3000:8080 \
-  -v open-webui:/app/backend/data \
-  --name open-webui \
-  --restart unless-stopped \
+echo "Installing webui (ChatGPT-like UI for local LLMs)..."
+docker run -d --name webui --restart unless-stopped \
+  -p 3000:8080 \
+  -v webui-data:/app/backend/data \
   ghcr.io/open-webui/open-webui:main
-echo "Open WebUI running at http://localhost:3000"
+echo "webui installed."
