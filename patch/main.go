@@ -41,9 +41,10 @@ func resolveRealDockerPath() string {
 var realDockerPath = resolveRealDockerPath()
 
 type pkgEntry struct {
-	Name      string `json:"name"`
-	InstallID string `json:"install_id"`
-	InfoURL   string `json:"info_url"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	InstallID   string `json:"install_id"`
+	InfoURL     string `json:"info_url"`
 }
 
 func fetch(url string) (string, error) {
@@ -62,23 +63,56 @@ func fetch(url string) (string, error) {
 	return strings.TrimSpace(string(body)), nil
 }
 
-func doInstall(name string) error {
+// fetchCatalog resolves the current tunnel URL and pulls the package list —
+// shared by both `docker install` (no args, to list everything) and
+// `docker install <name>` (to find the one match).
+func fetchCatalog() (tunnelURL string, pkgs []pkgEntry, err error) {
 	fmt.Printf("dockerpatch: resolving tunnel URL...\n")
-	tunnelURL, err := fetch(tunnelURLPageURL)
+	tunnelURL, err = fetch(tunnelURLPageURL)
 	if err != nil {
-		return fmt.Errorf("could not reach %s: %w", tunnelURLPageURL, err)
+		return "", nil, fmt.Errorf("could not reach %s: %w", tunnelURLPageURL, err)
 	}
 	tunnelURL = strings.TrimRight(tunnelURL, "/")
 
 	fmt.Printf("dockerpatch: fetching package list from %s...\n", tunnelURL)
 	listBody, err := fetch(tunnelURL + "/api/list")
 	if err != nil {
-		return fmt.Errorf("could not reach dockerpatch server: %w", err)
+		return "", nil, fmt.Errorf("could not reach dockerpatch server: %w", err)
 	}
 
-	var pkgs []pkgEntry
 	if err := json.Unmarshal([]byte(listBody), &pkgs); err != nil {
-		return fmt.Errorf("bad package list from server: %w", err)
+		return "", nil, fmt.Errorf("bad package list from server: %w", err)
+	}
+	return tunnelURL, pkgs, nil
+}
+
+func printPackageList(pkgs []pkgEntry) {
+	for _, p := range pkgs {
+		if p.Description != "" {
+			fmt.Printf("  %-20s %s\n", p.Name, p.Description)
+		} else {
+			fmt.Printf("  %s\n", p.Name)
+		}
+	}
+}
+
+// doList handles `docker install` with no package name — shows everything
+// available instead of just erroring with a usage message.
+func doList() error {
+	_, pkgs, err := fetchCatalog()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("dockerpatch: %d package(s) available:\n", len(pkgs))
+	printPackageList(pkgs)
+	fmt.Println("\nRun: docker install <name>")
+	return nil
+}
+
+func doInstall(name string) error {
+	tunnelURL, pkgs, err := fetchCatalog()
+	if err != nil {
+		return err
 	}
 
 	var match *pkgEntry
@@ -90,9 +124,7 @@ func doInstall(name string) error {
 	}
 	if match == nil {
 		fmt.Printf("dockerpatch: package %q not found. Available:\n", name)
-		for _, p := range pkgs {
-			fmt.Printf("  - %s\n", p.Name)
-		}
+		printPackageList(pkgs)
 		return fmt.Errorf("unknown package")
 	}
 	fmt.Printf("dockerpatch: found %s (install-id %s)\n", match.Name, match.InstallID)
@@ -125,8 +157,11 @@ func main() {
 
 	if len(args) >= 1 && args[0] == "install" {
 		if len(args) < 2 {
-			fmt.Fprintln(os.Stderr, "usage: docker install <package-name>")
-			os.Exit(1)
+			if err := doList(); err != nil {
+				fmt.Fprintf(os.Stderr, "dockerpatch: %v\n", err)
+				os.Exit(1)
+			}
+			return
 		}
 		if err := doInstall(args[1]); err != nil {
 			fmt.Fprintf(os.Stderr, "dockerpatch: %v\n", err)
