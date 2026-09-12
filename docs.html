@@ -69,6 +69,41 @@ th{color:var(--sub); font-weight:600; font-size:11.5px; text-transform:uppercase
     <pre>docker install                  # list every available package
 docker install &lt;name&gt;           # install one, e.g:
 docker install portainer</pre>
+    <p>Every other <code>docker</code> subcommand — <code>run</code>, <code>ps</code>, <code>build</code>, <code>compose</code>, all of it — passes straight through to the real Docker binary, completely unmodified. Only <code>install</code> is new.</p>
+  </section>
+
+  <section>
+    <h2>How the patch works</h2>
+    <p><code>install.sh</code> renames your existing <code>docker</code> binary to <code>docker-real</code>, then puts a small wrapper binary in its place named <code>docker</code>. The wrapper checks the first argument: if it's <code>install</code>, it handles that itself (talking to the server below); for literally anything else, it execs straight through to <code>docker-real</code> with all the original arguments untouched. This means it works regardless of your installed Docker version, and a Docker upgrade later won't break it — the wrapper never inspects or depends on Docker's own version.</p>
+    <p>Uninstalling is the reverse: delete the wrapper, rename <code>docker-real</code> back to <code>docker</code>.</p>
+  </section>
+
+  <section>
+    <h2>Architecture</h2>
+    <table>
+      <tr><th>piece</th><th>what it does</th></tr>
+      <tr><td><code>patch/</code></td><td>the wrapper binary (Go) — intercepts <code>install</code>, execs through for everything else</td></tr>
+      <tr><td><code>server/</code></td><td>serves the catalog and scripts (Go) — this is what <code>docker install</code> actually talks to over the network</td></tr>
+      <tr><td><code>packages/</code></td><td>the curated install scripts, source of truth alongside <code>server/scripts_bundle.json</code></td></tr>
+      <tr><td><code>ghsearch/</code></td><td>Python tool that finds new packages via GitHub code search</td></tr>
+      <tr><td><code>index.html</code> / <code>submit.html</code> / <code>findinstalls.html</code> / <code>docs.html</code></td><td>this site, served from GitHub Pages</td></tr>
+    </table>
+    <p>The server is exposed via a Cloudflare quick tunnel — this means its URL is ephemeral and changes on every restart. <code>tunnel-url.txt</code> at the repo root always holds the current one; <code>index.html</code>'s package browser and <code>submit.html</code> both fetch it fresh rather than hardcoding a URL, so a tunnel restart never breaks the site itself (though existing local <code>docker install</code> installs may need <code>install.sh</code> re-run if their cached URL goes stale).</p>
+  </section>
+
+  <section id="self-hosting">
+    <h2>Self-hosting the server</h2>
+    <p>You don't need our server at all — <code>server/</code> is a plain Go program you can run yourself against your own catalog.</p>
+    <pre>cd server
+go build -o dockerpatch-server .
+./dockerpatch-server          # listens on :8940 by default</pre>
+    <table>
+      <tr><th>env var</th><th>default</th><th>purpose</th></tr>
+      <tr><td><code>PORT</code></td><td>8940</td><td>listen port</td></tr>
+      <tr><td><code>DOCKERPATCH_CATALOG</code></td><td>packages.json</td><td>path to the catalog file</td></tr>
+      <tr><td><code>DOCKERPATCH_SCRIPTS_BUNDLE</code></td><td>scripts_bundle.json</td><td>path to the bundled script contents</td></tr>
+    </table>
+    <p>Both files are reloaded from disk on <em>every request</em> — hand-edit them, or run <code>ghsearch</code> against them, and changes show up immediately with zero restart.</p>
   </section>
 
   <section>
@@ -78,17 +113,26 @@ docker install portainer</pre>
     <div class="endpoint">
       <div class="line"><span class="method">GET</span><span class="path">/api/list</span></div>
       <div class="desc">Full catalog as JSON. Reloaded from disk on every request — new packages appear without a server restart.</div>
-      <pre>[{ "name": "portainer", "description": "Docker management UI", "install_id": "7da65835", "info_url": "/api/info/portainer" }, ...]</pre>
+      <pre>curl $(cat tunnel-url.txt)/api/list
+
+[{ "name": "portainer", "description": "Docker management UI", "install_id": "7da65835", "info_url": "/api/info/portainer" }, ...]</pre>
     </div>
 
     <div class="endpoint">
       <div class="line"><span class="method">GET</span><span class="path">/api/info/&lt;name&gt;</span></div>
       <div class="desc">Returns the relative script URL for one package (plain text), e.g. <code>/scripts/portainer.txt</code>.</div>
+      <pre>curl $(cat tunnel-url.txt)/api/info/portainer
+&rarr; /scripts/portainer.txt</pre>
     </div>
 
     <div class="endpoint">
       <div class="line"><span class="method">GET</span><span class="path">/scripts/&lt;name&gt;.txt</span></div>
       <div class="desc">The actual install script — a real <code>docker run</code> command, plain text, ready to execute.</div>
+      <pre>curl $(cat tunnel-url.txt)/scripts/portainer.txt
+&rarr; #!/usr/bin/env bash
+   set -e
+   echo "Installing portainer..."
+   docker run -d -p 9000:9000 --name portainer ...</pre>
     </div>
 
     <div class="endpoint">
@@ -111,7 +155,41 @@ docker install portainer</pre>
 
   <section>
     <h2>Catalog sources</h2>
-    <p>Packages come from two places: a hand-curated set, and an automated GitHub code-search tool (<code>ghsearch/</code>) that finds real <code>docker run -d -p</code> commands in public repos and appends genuinely new ones — deduped by Docker image, not just name. You can also submit your own repo directly via <a href="submit.html">submit.html</a>, which pulls the real command straight out of your repo for you to confirm before it's added.</p>
+    <p>Packages come from three places:</p>
+    <table>
+      <tr><th>source</th><th>notes</th></tr>
+      <tr><td>Hand-curated</td><td>a base set of well-known self-hostable apps (Portainer, Nextcloud, Vaultwarden, Jellyfin, and hundreds more)</td></tr>
+      <tr><td><code>ghsearch/</code></td><td>a Python tool that runs GitHub code search for <code>"docker run -d -p"</code>, extracts the real command from each match, and appends genuinely new ones — deduped by Docker <em>image</em>, not just package name, so the same app found under different repo names doesn't get added twice</td></tr>
+      <tr><td><a href="submit.html">submit.html</a></td><td>you search for your own repo, it pulls the real <code>docker run</code> command straight out of it, you confirm it's correct, then it's added via <code>POST /api/submit</code></td></tr>
+    </table>
+    <p>Because the GitHub-search path is a heuristic scraper rather than a curator, at scale it surfaces some noise alongside genuine finds (base OS images, one-off test repos). This is a known, accepted tradeoff — quantity over cleanup — not something actively filtered further right now.</p>
+  </section>
+
+  <section>
+    <h2>FAQ</h2>
+    <div class="endpoint">
+      <div class="desc"><b style="color:var(--txt)">Does this replace Docker itself?</b><br>No — it's a thin wrapper around your existing Docker install. Uninstall it any time and your normal <code>docker</code> binary is exactly as it was.</div>
+    </div>
+    <div class="endpoint">
+      <div class="desc"><b style="color:var(--txt)">Is the install script safe to run blind?</b><br><code>docker install &lt;name&gt;</code> downloads and runs a real, published <code>docker run</code> command over HTTPS — same trust model as running any install script from the internet. Check <code>/scripts/&lt;name&gt;.txt</code> yourself first if you want to see exactly what it does before running it.</div>
+    </div>
+    <div class="endpoint">
+      <div class="desc"><b style="color:var(--txt)">Why does the tunnel URL keep changing?</b><br>The server runs behind a free Cloudflare quick tunnel, which issues a new random hostname every time it restarts (no fixed hostname without a paid Cloudflare tunnel). <code>tunnel-url.txt</code> always has the current one — nothing else on this site hardcodes a stale URL.</div>
+    </div>
+    <div class="endpoint">
+      <div class="desc"><b style="color:var(--txt)">Can I run my own catalog instead of the shared one?</b><br>Yes — see <a href="#self-hosting">self-hosting</a> above. Point your local <code>docker install</code> wrapper at your own server's tunnel/URL and it works identically.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Troubleshooting</h2>
+    <table>
+      <tr><th>symptom</th><th>likely cause</th></tr>
+      <tr><td><code>unsupported protocol scheme ""</code></td><td>stale <code>tunnel-url.txt</code> cached locally — re-run <code>install.sh</code></td></tr>
+      <tr><td><code>package not found</code></td><td>name typo, or the package was renamed/removed since you last checked <code>docker install</code> with no args</td></tr>
+      <tr><td><code>409</code> from <code>/api/submit</code></td><td>that name already exists in the catalog — pick a different one</td></tr>
+      <tr><td>Submit page stuck on "Searching GitHub..."</td><td>GitHub's public search API rate limit (10 req/min unauthenticated) — wait a minute and retry</td></tr>
+    </table>
   </section>
 
   <section>
