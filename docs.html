@@ -83,10 +83,9 @@ docker install portainer</pre>
       <tr><th>component</th><th>description</th></tr>
       <tr><td><code>patch/</code></td><td>CLI wrapper (Go)</td></tr>
       <tr><td><code>server/</code></td><td>catalog and script server (Go)</td></tr>
-      <tr><td><code>packages/</code></td><td>install scripts, source of truth alongside <code>server/scripts_bundle.json</code></td></tr>
-      <tr><td><code>ghsearch/</code></td><td>catalog-discovery tool (Python)</td></tr>
       <tr><td><code>index.html</code>, <code>submit.html</code>, <code>findinstalls.html</code>, <code>docs.html</code></td><td>static site, served via GitHub Pages</td></tr>
     </table>
+    <p>The catalog data itself (<code>packages.json</code>, the install scripts) is not part of this repository — it's runtime data read by the deployed server instance from its own local disk.</p>
     <p>The server is exposed via a Cloudflare quick tunnel, which issues a new hostname on each restart. <code>tunnel-url.txt</code> at the repository root holds the current one; clients fetch it at request time rather than hardcoding a URL.</p>
   </section>
 
@@ -144,7 +143,7 @@ go build -o dockerpatch-server .
     <table>
       <tr><th>source</th><th>description</th></tr>
       <tr><td>Curated</td><td>a base set of established self-hostable applications</td></tr>
-      <tr><td><code>ghsearch/</code></td><td>searches GitHub for <code>docker run -d -p</code> commands and appends new matches, deduplicated by Docker image</td></tr>
+      <tr><td>GitHub code search</td><td>an internal discovery process that searches GitHub for <code>docker run -d -p</code> commands and appends new matches, deduplicated by Docker image</td></tr>
       <tr><td><a href="submit.html">submit.html</a></td><td>extracts a <code>docker run</code> command from a specified repository for review before adding it to the catalog</td></tr>
     </table>
   </section>
