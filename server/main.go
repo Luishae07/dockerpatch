@@ -181,12 +181,19 @@ type submitRequest struct {
 var nameRe = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{1,63}$`)
 
 func handleSubmit(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "POST only", http.StatusMethodNotAllowed)
+	// CORS header must be set before the method check — the browser sends
+	// an OPTIONS preflight ahead of the real POST (since Content-Type:
+	// application/json isn't a "simple" header), and that preflight needs
+	// this header on its response or the whole request gets blocked
+	// client-side before the POST is ever sent.
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	if r.Method == http.MethodOptions {
 		return
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	if r.Method == http.MethodOptions {
+	if r.Method != http.MethodPost {
+		http.Error(w, "POST only", http.StatusMethodNotAllowed)
 		return
 	}
 
