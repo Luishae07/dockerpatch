@@ -113,7 +113,7 @@ go build -o dockerpatch-server .
     <div class="endpoint">
       <div class="line"><span class="method">GET</span><span class="path">/api/list</span></div>
       <div class="desc">Full catalog as JSON. Reloaded from disk on every request — new packages appear without a server restart.</div>
-      <pre>curl $(cat tunnel-url.txt)/api/list
+      <pre>curl $(curl -s https://luishae07.github.io/dockerpatch/tunnel-url.txt)/api/list
 
 [{ "name": "portainer", "description": "Docker management UI", "install_id": "7da65835", "info_url": "/api/info/portainer" }, ...]</pre>
     </div>
@@ -121,14 +121,14 @@ go build -o dockerpatch-server .
     <div class="endpoint">
       <div class="line"><span class="method">GET</span><span class="path">/api/info/&lt;name&gt;</span></div>
       <div class="desc">Returns the relative script URL for one package (plain text), e.g. <code>/scripts/portainer.txt</code>.</div>
-      <pre>curl $(cat tunnel-url.txt)/api/info/portainer
+      <pre>curl $(curl -s https://luishae07.github.io/dockerpatch/tunnel-url.txt)/api/info/portainer
 &rarr; /scripts/portainer.txt</pre>
     </div>
 
     <div class="endpoint">
       <div class="line"><span class="method">GET</span><span class="path">/scripts/&lt;name&gt;.txt</span></div>
       <div class="desc">The actual install script — a real <code>docker run</code> command, plain text, ready to execute.</div>
-      <pre>curl $(cat tunnel-url.txt)/scripts/portainer.txt
+      <pre>curl $(curl -s https://luishae07.github.io/dockerpatch/tunnel-url.txt)/scripts/portainer.txt
 &rarr; #!/usr/bin/env bash
    set -e
    echo "Installing portainer..."
