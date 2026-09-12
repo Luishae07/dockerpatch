@@ -88,6 +88,15 @@ input::placeholder{color:var(--sub2);}
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 .count{color:var(--sub2); font-size:12.5px; margin-bottom:10px;}
+.categories{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;}
+.catchip{
+  background:var(--card); border:1px solid var(--border); color:var(--sub);
+  padding:6px 12px; border-radius:20px; font-size:12px; font-weight:600;
+  cursor:pointer; transition:background .15s, border-color .15s, color .15s;
+  white-space:nowrap;
+}
+.catchip:hover{border-color:var(--border-hover); color:var(--txt);}
+.catchip.active{background:linear-gradient(135deg,var(--acc),var(--acc2)); border-color:transparent; color:#fff;}
 </style>
 </head>
 <body>
@@ -114,6 +123,7 @@ input::placeholder{color:var(--sub2);}
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="filterInput" placeholder="Filter packages..." autocomplete="off" spellcheck="false">
     </div>
+    <div id="categories" class="categories"></div>
     <div id="count" class="count"></div>
     <div id="pkglist" class="pkglist"><div class="loading">Loading catalog</div></div>
   </div>
@@ -125,13 +135,34 @@ function copyInstall(){
 }
 
 let allPackages = [];
+let activeCategory = null;
+
+function renderCategories(){
+  const counts = {};
+  allPackages.forEach(p => { counts[p.category || 'Other'] = (counts[p.category || 'Other'] || 0) + 1; });
+  const cats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+  const el = document.getElementById('categories');
+  el.innerHTML = ['All', ...cats].map(c => {
+    const active = (c === 'All' && !activeCategory) || c === activeCategory;
+    const label = c === 'All' ? `All (${allPackages.length})` : `${c} (${counts[c]})`;
+    return `<div class="catchip${active ? ' active' : ''}" data-cat="${c}">${label}</div>`;
+  }).join('');
+  el.querySelectorAll('.catchip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      activeCategory = chip.dataset.cat === 'All' ? null : chip.dataset.cat;
+      renderCategories();
+      render(document.getElementById('filterInput').value);
+    });
+  });
+}
 
 function render(filter){
   const list = document.getElementById('pkglist');
   const count = document.getElementById('count');
   const f = (filter || '').toLowerCase();
   const shown = allPackages.filter(p =>
-    p.name.toLowerCase().includes(f) || (p.description || '').toLowerCase().includes(f)
+    (!activeCategory || p.category === activeCategory) &&
+    (p.name.toLowerCase().includes(f) || (p.description || '').toLowerCase().includes(f))
   );
   count.textContent = `${shown.length} of ${allPackages.length} packages`;
   if (!shown.length){
@@ -154,6 +185,7 @@ async function loadCatalog(){
     const tunnelUrl = (await (await fetch('tunnel-url.txt')).text()).trim();
     allPackages = await (await fetch(tunnelUrl + '/api/list')).json();
     allPackages.sort((a, b) => a.name.localeCompare(b.name));
+    renderCategories();
     render('');
   } catch (e) {
     document.getElementById('pkglist').innerHTML = '<div class="loading">Could not reach the catalog server — try again shortly.</div>';
