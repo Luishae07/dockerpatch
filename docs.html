@@ -135,17 +135,6 @@ go build -o dockerpatch-server .
    docker run -d -p 9000:9000 --name portainer ...</pre>
     </div>
 
-    <div class="endpoint">
-      <div class="line"><span class="method">POST</span><span class="path">/api/submit</span></div>
-      <div class="desc">Adds a new package to the catalog. Used by <a href="submit.html">submit.html</a> after you confirm the extracted command is correct.</div>
-      <pre>{ "name": "my-app", "description": "...", "script": "#!/usr/bin/env bash\nset -e\ndocker run -d ...", "source": "owner/repo" }</pre>
-      <table>
-        <tr><th>field</th><th>notes</th></tr>
-        <tr><td><code>name</code></td><td>lowercase letters/digits/hyphens, 2–64 chars, must not already exist</td></tr>
-        <tr><td><code>script</code></td><td>must contain a real <code>docker run</code> command, max 20,000 chars</td></tr>
-      </table>
-      <p style="margin-top:8px">Returns <code>409</code> if the name is already taken, <code>400</code> for invalid input, <code>200</code> with <code>{"status":"ok","install_id":"..."}</code> on success.</p>
-    </div>
   </section>
 
   <section>
@@ -160,7 +149,7 @@ go build -o dockerpatch-server .
       <tr><th>source</th><th>notes</th></tr>
       <tr><td>Hand-curated</td><td>a base set of well-known self-hostable apps (Portainer, Nextcloud, Vaultwarden, Jellyfin, and hundreds more)</td></tr>
       <tr><td><code>ghsearch/</code></td><td>a Python tool that runs GitHub code search for <code>"docker run -d -p"</code>, extracts the real command from each match, and appends genuinely new ones — deduped by Docker <em>image</em>, not just package name, so the same app found under different repo names doesn't get added twice</td></tr>
-      <tr><td><a href="submit.html">submit.html</a></td><td>you search for your own repo, it pulls the real <code>docker run</code> command straight out of it, you confirm it's correct, then it's added via <code>POST /api/submit</code></td></tr>
+      <tr><td><a href="submit.html">submit.html</a></td><td>you search for your own repo, it pulls the real <code>docker run</code> command straight out of it, you confirm it's correct, then it's added to the catalog</td></tr>
     </table>
     <p>Because the GitHub-search path is a heuristic scraper rather than a curator, at scale it surfaces some noise alongside genuine finds (base OS images, one-off test repos). This is a known, accepted tradeoff — quantity over cleanup — not something actively filtered further right now.</p>
   </section>
@@ -187,7 +176,7 @@ go build -o dockerpatch-server .
       <tr><th>symptom</th><th>likely cause</th></tr>
       <tr><td><code>unsupported protocol scheme ""</code></td><td>stale <code>tunnel-url.txt</code> cached locally — re-run <code>install.sh</code></td></tr>
       <tr><td><code>package not found</code></td><td>name typo, or the package was renamed/removed since you last checked <code>docker install</code> with no args</td></tr>
-      <tr><td><code>409</code> from <code>/api/submit</code></td><td>that name already exists in the catalog — pick a different one</td></tr>
+      <tr><td><code>409</code> when submitting via submit.html</td><td>that name already exists in the catalog — pick a different one</td></tr>
       <tr><td>Submit page stuck on "Searching GitHub..."</td><td>GitHub's public search API rate limit (10 req/min unauthenticated) — wait a minute and retry</td></tr>
     </table>
   </section>
