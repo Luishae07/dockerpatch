@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docs — dockerpatch</title>
+<style>
+:root{
+  --bg:#0a0c11; --card:#141821; --card-hover:#181d28;
+  --border:#242a36; --border-hover:#323a4a;
+  --txt:#eef1f7; --sub:#8b93a6; --sub2:#5c6479;
+  --acc:#6b8cff; --acc2:#9b6bff;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(107,140,255,0.14), transparent 60%),
+    radial-gradient(1000px 500px at 90% 10%, rgba(155,107,255,0.12), transparent 60%),
+    var(--bg);
+  padding:48px 20px 80px;
+}
+.wrap{max-width:720px; margin:0 auto;}
+h1{font-size:26px; margin:0 0 8px; font-weight:700;}
+.sub{color:var(--sub); font-size:14px; margin:0 0 32px; line-height:1.5;}
+a{color:var(--acc);}
+.back{color:var(--sub); font-size:12.5px; text-decoration:none; display:inline-block; margin-bottom:20px;}
+.back:hover{color:var(--txt);}
+section{margin-bottom:34px;}
+h2{font-size:16px; font-weight:700; margin:0 0 6px;}
+p{color:var(--sub); font-size:13.5px; line-height:1.65; margin:0 0 12px;}
+.endpoint{
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:14px 16px; margin-bottom:10px;
+}
+.endpoint .line{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px;}
+.method{
+  font-weight:700; font-size:11px; border:1px solid var(--acc); color:var(--acc);
+  border-radius:6px; padding:2px 7px; letter-spacing:.02em;
+}
+.path{font-family:"SF Mono",ui-monospace,monospace; font-size:13.5px;}
+.desc{color:var(--sub); font-size:13px; line-height:1.5;}
+pre{
+  background:#0d0f15; border:1px solid var(--border); border-radius:10px;
+  padding:12px 14px; font-family:"SF Mono",ui-monospace,monospace; font-size:12.5px;
+  overflow-x:auto; margin:10px 0 0;
+}
+code{font-family:"SF Mono",ui-monospace,monospace; font-size:.92em; color:var(--txt);}
+table{width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;}
+th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--border);}
+th{color:var(--sub); font-weight:600; font-size:11.5px; text-transform:uppercase; letter-spacing:.03em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; back to dockerpatch</a>
+  <h1>Docs</h1>
+  <p class="sub">The dockerpatch server API — what <code>docker install</code> actually talks to, and what <a href="submit.html">submit.html</a> uses to add new packages.</p>
+
+  <section>
+    <h2>Install one-liner</h2>
+    <p>Patches your local <code>docker</code> CLI to add a new subcommand. Everything else (<code>docker run</code>, <code>docker ps</code>, etc.) passes straight through to the real binary unchanged.</p>
+    <pre>curl -fsSL https://raw.githubusercontent.com/Luishae07/dockerpatch/main/install.sh | bash</pre>
+  </section>
+
+  <section>
+    <h2>Using it</h2>
+    <pre>docker install                  # list every available package
+docker install &lt;name&gt;           # install one, e.g:
+docker install portainer</pre>
+  </section>
+
+  <section>
+    <h2>Server endpoints</h2>
+    <p>The server backing the catalog — same one <code>docker install</code> and this site's package browser both call.</p>
+
+    <div class="endpoint">
+      <div class="line"><span class="method">GET</span><span class="path">/api/list</span></div>
+      <div class="desc">Full catalog as JSON. Reloaded from disk on every request — new packages appear without a server restart.</div>
+      <pre>[{ "name": "portainer", "description": "Docker management UI", "install_id": "7da65835", "info_url": "/api/info/portainer" }, ...]</pre>
+    </div>
+
+    <div class="endpoint">
+      <div class="line"><span class="method">GET</span><span class="path">/api/info/&lt;name&gt;</span></div>
+      <div class="desc">Returns the relative script URL for one package (plain text), e.g. <code>/scripts/portainer.txt</code>.</div>
+    </div>
+
+    <div class="endpoint">
+      <div class="line"><span class="method">GET</span><span class="path">/scripts/&lt;name&gt;.txt</span></div>
+      <div class="desc">The actual install script — a real <code>docker run</code> command, plain text, ready to execute.</div>
+    </div>
+
+    <div class="endpoint">
+      <div class="line"><span class="method">POST</span><span class="path">/api/submit</span></div>
+      <div class="desc">Adds a new package to the catalog. Used by <a href="submit.html">submit.html</a> after you confirm the extracted command is correct.</div>
+      <pre>{ "name": "my-app", "description": "...", "script": "#!/usr/bin/env bash\nset -e\ndocker run -d ...", "source": "owner/repo" }</pre>
+      <table>
+        <tr><th>field</th><th>notes</th></tr>
+        <tr><td><code>name</code></td><td>lowercase letters/digits/hyphens, 2–64 chars, must not already exist</td></tr>
+        <tr><td><code>script</code></td><td>must contain a real <code>docker run</code> command, max 20,000 chars</td></tr>
+      </table>
+      <p style="margin-top:8px">Returns <code>409</code> if the name is already taken, <code>400</code> for invalid input, <code>200</code> with <code>{"status":"ok","install_id":"..."}</code> on success.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Install IDs</h2>
+    <p>Each package's install-id is the first 8 bytes of <code>sha256(name)</code>, hex-encoded — deterministic, so it never changes across server restarts. Look one up on <a href="findinstalls.html">findinstalls.html</a>.</p>
+  </section>
+
+  <section>
+    <h2>Catalog sources</h2>
+    <p>Packages come from two places: a hand-curated set, and an automated GitHub code-search tool (<code>ghsearch/</code>) that finds real <code>docker run -d -p</code> commands in public repos and appends genuinely new ones — deduped by Docker image, not just name. You can also submit your own repo directly via <a href="submit.html">submit.html</a>, which pulls the real command straight out of your repo for you to confirm before it's added.</p>
+  </section>
+
+  <section>
+    <h2>Source</h2>
+    <p><a href="https://github.com/Luishae07/dockerpatch">github.com/Luishae07/dockerpatch</a> — no license restrictions on browsing/forking the catalog and patch source.</p>
+  </section>
+</div>
+</body>
+</html>
