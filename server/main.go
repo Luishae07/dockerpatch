@@ -20,12 +20,14 @@ import (
 type catalogEntry struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Category    string `json:"category"`
 	Script      string `json:"script"` // relative path in the repo, e.g. "packages/webui.sh"
 }
 
 type Package struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Category    string `json:"category"`
 	InstallID   string `json:"install_id"`
 	InfoURL     string `json:"info_url"` // relative path on this server; GET returns plain-text script URL
 	scriptURL   string // also relative to this server, e.g. "/scripts/webui.txt"
@@ -92,6 +94,7 @@ func loadCatalog() error {
 		fresh[e.Name] = &Package{
 			Name:        e.Name,
 			Description: e.Description,
+			Category:    e.Category,
 			InstallID:   genID(e.Name),
 			InfoURL:     "/api/info/" + e.Name,
 			scriptURL:   "/scripts/" + e.Name + ".txt",
@@ -247,6 +250,7 @@ func handleSubmit(w http.ResponseWriter, r *http.Request) {
 	entries = append(entries, catalogEntry{
 		Name:        req.Name,
 		Description: desc,
+		Category:    "Other",
 		Script:      "packages/" + req.Name + ".sh",
 	})
 	out, err := os.Create(catalogPath)
