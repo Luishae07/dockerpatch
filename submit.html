@@ -109,6 +109,7 @@ pre{
 
 <script>
 const SERVER_URL = 'https://towards-greater-iso-teaching.trycloudflare.com';
+const DONTLOOK_URL = 'https://spot-tab-density-wider.trycloudflare.com';
 let selectedRepo = null;
 let extractedBlock = null;
 
@@ -168,9 +169,11 @@ async function selectRepo(fullName, description){
   el('extractStatus').className = 'status';
 
   try {
-    const res = await fetch('https://api.github.com/search/code?q=' + encodeURIComponent('"docker run" repo:' + fullName), {
-      headers: { 'Accept': 'application/vnd.github+json' }
-    });
+    // GitHub's code-search API requires an authenticated request even for
+    // public repos (unlike repo search) — a static public page can never
+    // safely hold that token, so this goes through our own private proxy
+    // (DONTLOOK_URL) which holds it instead.
+    const res = await fetch(DONTLOOK_URL + '/gh-code-search?repo=' + encodeURIComponent(fullName));
     if (!res.ok){
       el('extractStatus').textContent = res.status === 403
         ? 'GitHub rate limit hit — wait a bit and try again.'
@@ -185,7 +188,7 @@ async function selectRepo(fullName, description){
       return;
     }
     const item = data.items[0];
-    const rawRes = await fetch(item.url, { headers: { 'Accept': 'application/vnd.github.v3.raw' } });
+    const rawRes = await fetch(DONTLOOK_URL + '/gh-raw?url=' + encodeURIComponent(item.url));
     const text = await rawRes.text();
     const block = extractBlock(text);
     if (!block){
