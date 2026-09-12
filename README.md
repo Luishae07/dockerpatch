@@ -12,22 +12,26 @@ binary, so it works transparently regardless of your installed Docker version.
 2. It calls `<tunnel>/api/list` on that server, which returns a JSON catalog of
    packages: `{name, install_id, info_url}`.
 3. It fetches `<tunnel><info_url>` for the matching package, which returns a
-   plain-text URL — a raw GitHub link to the actual install script.
-4. It downloads that script and runs it.
+   plain-text relative path, e.g. `/scripts/<name>.txt`.
+4. It fetches that path from the same server, which returns the install
+   script as plain text, and runs it.
 
 ## Layout
 
-- `server/` — the Go backend serving `/api/list` and `/api/info/<name>`
-- `patch/` — the Go wrapper that replaces `docker` on PATH
-- `packages/` — the actual install scripts referenced by the catalog
+- `server/` — the Go backend serving `/api/list`, `/api/info/<name>`, and
+  `/scripts/<name>.txt`. The catalog data (`packages.json`, the script
+  contents) is runtime data on the deployed server's own disk, not part of
+  this repository.
+- `patch/` — the Go wrapper that replaces `docker` on PATH.
 
 ## Installing the patch
 
 ```bash
-cd patch
-go build -o docker-patched main.go
-sudo mv /usr/bin/docker /usr/bin/docker-real
-sudo mv docker-patched /usr/bin/docker
+curl -fsSL https://raw.githubusercontent.com/Luishae07/dockerpatch/main/install.sh | bash
 ```
 
 Now `docker install webui` works, and every other `docker ...` command behaves exactly as before.
+
+## Docs
+
+See [docs.html](https://luishae07.github.io/dockerpatch/docs.html) for the full API reference, self-hosting instructions, and troubleshooting.
