@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why dockerpatch — dockerpatch</title>
+<style>
+:root{
+  --bg:#0a0c11; --card:#141821; --card-hover:#181d28;
+  --border:#242a36; --border-hover:#323a4a;
+  --txt:#eef1f7; --sub:#8b93a6; --sub2:#5c6479;
+  --acc:#6b8cff; --acc2:#9b6bff;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(107,140,255,0.14), transparent 60%),
+    radial-gradient(1000px 500px at 90% 10%, rgba(155,107,255,0.12), transparent 60%),
+    var(--bg);
+  padding:48px 20px 80px;
+}
+.wrap{max-width:720px; margin:0 auto;}
+h1{font-size:26px; margin:0 0 8px; font-weight:700;}
+.sub{color:var(--sub); font-size:14px; margin:0 0 32px; line-height:1.5;}
+a{color:var(--acc);}
+.back{color:var(--sub); font-size:12.5px; text-decoration:none; display:inline-block; margin-bottom:20px;}
+.back:hover{color:var(--txt);}
+section{margin-bottom:30px;}
+h2{font-size:16px; font-weight:700; margin:0 0 10px;}
+p{color:var(--sub); font-size:13.5px; line-height:1.65; margin:0 0 10px;}
+code{font-family:"SF Mono",ui-monospace,monospace; font-size:.92em; color:var(--txt);}
+pre{
+  background:#0d0f15; border:1px solid var(--border); border-radius:10px;
+  padding:12px 14px; font-family:"SF Mono",ui-monospace,monospace; font-size:12.5px;
+  overflow-x:auto; margin:10px 0 0;
+}
+.compare{
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;
+}
+.compare .col{
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:14px 16px;
+}
+.compare .col h3{font-size:12.5px; color:var(--sub); text-transform:uppercase; letter-spacing:.03em; margin:0 0 8px; font-weight:700;}
+.compare .col p{margin:0; font-size:13px;}
+@media (max-width:560px){ .compare{grid-template-columns:1fr;} }
+.cta{
+  margin-top:36px; text-align:center;
+}
+.cta a{
+  display:inline-block; background:linear-gradient(90deg,var(--acc),var(--acc2));
+  color:#0a0c11; font-weight:700; font-size:13.5px; text-decoration:none;
+  padding:10px 22px; border-radius:10px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; back to dockerpatch</a>
+  <h1>Why dockerpatch?</h1>
+  <p class="sub">What this actually saves you, in plain terms.</p>
+
+  <section>
+    <h2>The problem it solves</h2>
+    <p>Standing up a self-hosted app usually means: find the project, find its README, find the actual <code>docker run</code> command buried in it, figure out which ports/volumes/env vars you need, then run it. That's several minutes and a few tabs for something that should be one line.</p>
+    <pre>docker install jellyfin</pre>
+    <p>That's the whole workflow. It fetches the real, working <code>docker run</code> command for that project and runs it.</p>
+  </section>
+
+  <section>
+    <h2>What it isn't</h2>
+    <div class="compare">
+      <div class="col">
+        <h3>dockerpatch</h3>
+        <p>A thin wrapper around your existing <code>docker</code> CLI. Only <code>install</code> is new — every other command behaves exactly as it always has.</p>
+      </div>
+      <div class="col">
+        <h3>Not a new runtime</h3>
+        <p>No new daemon, no new config format, no replacement for Docker itself. If you already know <code>docker</code>, you already know this.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Who this is for</h2>
+    <p>Anyone who self-hosts more than one or two things and is tired of re-deriving the same <code>docker run</code> incantation from a README every time. If you already have a personal collection of bookmarked install commands, this is that collection, searchable, shared, and growing.</p>
+  </section>
+
+  <section>
+    <h2>What you're trusting</h2>
+    <p>Same trust model as pulling any image and running any command yourself — every script is a plain, readable <code>docker run</code> line sourced from a real public repository. Nothing is obfuscated, and you can read <code>/scripts/&lt;name&gt;.txt</code> before running anything. See the <a href="faq.html">FAQ</a> for the details on how junk/malformed entries get filtered out.</p>
+  </section>
+
+  <div class="cta">
+    <a href="index.html">Browse the catalog &rarr;</a>
+  </div>
+</div>
+</body>
+</html>
