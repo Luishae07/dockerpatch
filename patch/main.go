@@ -109,7 +109,7 @@ func doList() error {
 	return nil
 }
 
-func doInstall(name string) error {
+func doInstall(identifier string, byInstallID bool) error {
 	tunnelURL, pkgs, err := fetchCatalog()
 	if err != nil {
 		return err
@@ -117,13 +117,22 @@ func doInstall(name string) error {
 
 	var match *pkgEntry
 	for i := range pkgs {
-		if pkgs[i].Name == name {
+		if byInstallID {
+			if pkgs[i].InstallID == identifier {
+				match = &pkgs[i]
+				break
+			}
+		} else if pkgs[i].Name == identifier {
 			match = &pkgs[i]
 			break
 		}
 	}
 	if match == nil {
-		fmt.Printf("dockerpatch: package %q not found. Available:\n", name)
+		if byInstallID {
+			fmt.Printf("dockerpatch: no package with install-id %q. Available:\n", identifier)
+		} else {
+			fmt.Printf("dockerpatch: package %q not found. Available:\n", identifier)
+		}
 		printPackageList(pkgs)
 		return fmt.Errorf("unknown package")
 	}
@@ -163,7 +172,13 @@ func main() {
 			}
 			return
 		}
-		if err := doInstall(args[1]); err != nil {
+		byInstallID := false
+		for _, a := range args[2:] {
+			if a == "--install-id" {
+				byInstallID = true
+			}
+		}
+		if err := doInstall(args[1], byInstallID); err != nil {
 			fmt.Fprintf(os.Stderr, "dockerpatch: %v\n", err)
 			os.Exit(1)
 		}
