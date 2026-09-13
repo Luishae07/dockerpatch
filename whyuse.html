@@ -93,6 +93,56 @@ pre{
     <p>Same trust model as pulling any image and running any command yourself — every script is a plain, readable <code>docker run</code> line sourced from a real public repository. Nothing is obfuscated, and you can read <code>/scripts/&lt;name&gt;.txt</code> before running anything. See the <a href="faq.html">FAQ</a> for the details on how junk/malformed entries get filtered out.</p>
   </section>
 
+  <section>
+    <h2>A concrete before/after</h2>
+    <p><b style="color:var(--txt)">Before:</b> you hear about a self-hosted RSS reader called Miniflux. You Google it, land on the GitHub repo, scroll past the badges and the feature list to find the "Docker" section, notice it wants a Postgres container too, copy both commands, realize you need to set an admin password env var, look up what that variable is actually called, then finally run both containers.</p>
+    <p><b style="color:var(--txt)">After:</b></p>
+    <pre>docker install miniflux</pre>
+    <p>The port mapping, the env vars, and the exact image tag are already worked out from a real, working example — you just get prompted for the one thing that's actually yours to decide (a password), instead of hunting for it in prose.</p>
+  </section>
+
+  <section>
+    <h2>How it compares to other options</h2>
+    <div class="compare">
+      <div class="col">
+        <h3>vs. copying commands from READMEs</h3>
+        <p>This is exactly that, just pre-done. The catalog exists specifically so you don't have to be the one parsing someone's install instructions each time.</p>
+      </div>
+      <div class="col">
+        <h3>vs. Docker Compose stacks</h3>
+        <p>Compose is the right tool once you're running several coordinated services long-term. This is for the "I just want this one thing running right now" case — a single command, not a stack file to maintain.</p>
+      </div>
+      <div class="col">
+        <h3>vs. a GUI app store (Portainer templates, Unraid, CasaOS)</h3>
+        <p>Those are great if you're already running that specific platform. This works from any terminal with Docker installed — no separate management UI to stand up first.</p>
+      </div>
+      <div class="col">
+        <h3>vs. an Awesome-Selfhosted-style list</h3>
+        <p>Those are curated reading lists — great for discovery, but you still end up copy-pasting a command out of a linked README. This is meant to be acted on directly from where you found it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where the catalog actually comes from</h2>
+    <p>It's not hand-typed one entry at a time. An automated process searches GitHub for real <code>docker run -d -p ...</code> commands already committed in public repositories, extracts the actual working command (not a placeholder), and pulls the project's own description for context. A junk filter runs before anything is added — rejecting things like coursework/tutorial repos, broken or self-referential commands, names that are just a hex hash, and non-Latin-script descriptions that wouldn't be readable in the catalog anyway. You can also submit a specific repo yourself via <a href="submit.html">submit.html</a> if the automated search hasn't found it yet.</p>
+  </section>
+
+  <section>
+    <h2>The install-time credential prompt</h2>
+    <p>Some real-world <code>docker run</code> commands hardcode an example password or API key directly (e.g. <code>-e password=changeme123</code>) because that's what the original README showed. Rather than ship that placeholder as-is, or silently drop it, dockerpatch detects credential-looking environment variables and prompts you for a real value interactively at install time — so you get a working, personalized container instead of one running on a copy-pasted example secret.</p>
+  </section>
+
+  <section>
+    <h2>What happens after you type the command</h2>
+    <p><code>docker install &lt;name&gt;</code> does exactly three things, every time: fetch the current catalog, resolve the package name to its script, and run that script. Nothing is cached, nothing is guessed — you always get the current, live version of a package's install command, the same one anyone else typing that command right now would get.</p>
+  </section>
+
+  <section>
+    <h2>The honest limits</h2>
+    <p>This isn't a curated, hand-vetted registry — it's a large, automatically-discovered catalog with a heuristic junk filter, not a security review of every entry. It won't manage upgrades, orchestrate multi-container stacks, or replace Compose/Kubernetes for anything beyond a single container. If what you need is a properly maintained production deployment, this is the fast on-ramp to try something, not the tool you run it with forever.</p>
+  </section>
+
   <div class="cta">
     <a href="index.html">Browse the catalog &rarr;</a>
   </div>
