@@ -1,0 +1,23 @@
+# Local-only catalog data — never committed to the repo, lives on the
+# deployed server's own disk (reloaded on every request, no restart needed)
+packages.json
+packages/
+server/packages.json
+server/scripts_bundle.json
+
+# Compiled binaries
+server/dockerpatch-server
+patch/docker-patched
+
+# Runtime/log files
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Local scratch/idea files
+DOCKERPATCH_IDEAS.txt
+ghsearch
+tacos*
+server/
