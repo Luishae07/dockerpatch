@@ -96,6 +96,31 @@ a{color:var(--acc);}
     <b>How do I remove the patch?</b>
     <p>Delete the wrapper binary and rename <code>docker-real</code> back to <code>docker</code>. See <a href="docs.html">docs.html</a> for the exact paths.</p>
   </div>
+
+  <div class="q">
+    <b>Why do some package names end in a number or a suffix like <code>-someuser</code>?</b>
+    <p>Multiple unrelated GitHub repos sometimes use the same generic name (e.g. two completely different tools both called "thor"). Rather than silently merging them under one entry, the second one discovered gets a suffix — usually derived from the source repo's owner (<code>thor-someuser</code>) — so they stay distinguishable as separate, real, unrelated tools.</p>
+  </div>
+
+  <div class="q">
+    <b>What license is this under?</b>
+    <p><a href="https://github.com/Luishae07/dockerpatch/blob/main/LICENSE">MIT</a> — use it, fork it, self-host your own catalog server against the same client, no restrictions.</p>
+  </div>
+
+  <div class="q">
+    <b>Are the categories accurate?</b>
+    <p>Mostly heuristic. Categorization tries the source repo's real GitHub topics first where available, and falls back to keyword matching against the name/description otherwise. Some packages land in "Other" simply because neither approach had enough signal.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I trust every package in the catalog?</b>
+    <p>Treat it the same as any other package registry: the scripts run real, unmodified <code>docker run</code> commands sourced from public GitHub repos, but nothing here is manually security-audited per package. Review a script before running it if you're installing something unfamiliar.</p>
+  </div>
+
+  <div class="q">
+    <b>Does <code>docker install</code> need network access?</b>
+    <p>Yes — it fetches the current tunnel URL, the catalog, and the script text over HTTPS each time, rather than caching anything locally, so it always reflects the current catalog.</p>
+  </div>
 </div>
 </body>
 </html>
