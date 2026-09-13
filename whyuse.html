@@ -138,6 +138,36 @@ pre{
     <p><code>docker install &lt;name&gt;</code> does exactly three things, every time: fetch the current catalog, resolve the package name to its script, and run that script. Nothing is cached, nothing is guessed — you always get the current, live version of a package's install command, the same one anyone else typing that command right now would get.</p>
   </section>
 
+  <section>
+    <h2>A catalog that keeps growing</h2>
+    <p>The catalog isn't a fixed snapshot — it's continuously expanded by an automated discovery process running against GitHub, plus direct community submissions through <a href="submit.html">submit.html</a>. Every category from media servers to databases to home-automation tools to dev/CI tooling picks up new real-world entries over time, so a search that comes up empty today can turn up something next time.</p>
+  </section>
+
+  <section>
+    <h2>Everything organized, browsable, and searchable</h2>
+    <p>The homepage catalog isn't just a flat list — every package is tagged with a real category (media & streaming, databases, monitoring, networking, security, home automation, and more), so you can browse by what you're actually looking for instead of scrolling an alphabetical dump. Categorization pulls from the source repository's own GitHub topics where available, falling back to keyword matching, so tags stay grounded in real signal rather than guesswork.</p>
+  </section>
+
+  <section>
+    <h2>Deterministic, shareable install IDs</h2>
+    <p>Every package also gets a short, stable install-id (derived from its name, so it's the same every time). That means you can reference a specific package by ID — handy for sharing a link to exactly the thing you mean via <a href="findinstalls.html">findinstalls.html</a> — without worrying about ambiguity if names ever overlap.</p>
+  </section>
+
+  <section>
+    <h2>Nothing to install to get started</h2>
+    <p>There's no separate app, daemon, or account needed beyond Docker itself, which you already have if you're reading this. <code>install.sh</code> patches your existing <code>docker</code> binary in one step, and from that point on <code>docker install &lt;name&gt;</code> just works alongside every command you already use daily.</p>
+  </section>
+
+  <section>
+    <h2>Open, forkable, and yours</h2>
+    <p>dockerpatch is <a href="https://github.com/Luishae07/dockerpatch/blob/main/LICENSE">MIT licensed</a> — read the source, fork it, adapt the client to point at your own catalog, or just use it as-is. Nothing about it is locked to a specific vendor or hosting provider.</p>
+  </section>
+
+  <section>
+    <h2>Built for the way people actually self-host</h2>
+    <p>Most self-hosters don't run one carefully-planned stack — they try things. A new media server one weekend, a monitoring dashboard the next, a note-taking app after that. dockerpatch is built around that reality: low commitment per try, a real working command every time, and a catalog wide enough that the next thing you want to try is probably already in it.</p>
+  </section>
+
   <div class="cta">
     <a href="index.html">Browse the catalog &rarr;</a>
   </div>
