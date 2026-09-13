@@ -136,6 +136,8 @@ go build -o dockerpatch-server .
   <section>
     <h2>Install IDs</h2>
     <p>Each package's install-id is the first 8 bytes of <code>sha256(name)</code>, hex-encoded, making it deterministic across restarts. Look one up via <a href="findinstalls.html">findinstalls.html</a>.</p>
+    <pre>docker install &lt;install-id&gt; --install-id</pre>
+    <p>Resolves and installs by install-id instead of name — useful when you have an ID (e.g. from a shared link) but not the package name.</p>
   </section>
 
   <section>
