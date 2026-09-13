@@ -121,6 +121,251 @@ a{color:var(--acc);}
     <b>Does <code>docker install</code> need network access?</b>
     <p>Yes — it fetches the current tunnel URL, the catalog, and the script text over HTTPS each time, rather than caching anything locally, so it always reflects the current catalog.</p>
   </div>
+
+  <div class="q">
+    <b>What platforms does the patch run on?</b>
+    <p>Anywhere the real <code>docker</code> CLI and Go can run — Linux and macOS natively, Windows via WSL2. It's a wrapper around your existing Docker installation, not a separate runtime.</p>
+  </div>
+
+  <div class="q">
+    <b>Does it work with Docker Desktop?</b>
+    <p>Yes. The wrapper only intercepts the <code>install</code> subcommand at the CLI level; it doesn't care whether the underlying daemon is Docker Desktop, Docker Engine, or another Docker-CLI-compatible setup.</p>
+  </div>
+
+  <div class="q">
+    <b>Does it work with Podman?</b>
+    <p>Only if you're using Podman's <code>docker</code>-compatible CLI alias. The wrapper shells out to whatever binary it renamed to <code>docker-real</code> — if that's Podman under an alias, non-install commands pass through fine, but this hasn't been specifically tested against Podman.</p>
+  </div>
+
+  <div class="q">
+    <b>What if a file named <code>docker-real</code> already exists before I install?</b>
+    <p><code>install.sh</code> will refuse to overwrite an existing <code>docker-real</code> rather than risk clobbering something — if you see that error, check what that file already is before proceeding.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I install multiple packages in one command?</b>
+    <p>No — <code>docker install &lt;name&gt;</code> takes exactly one package at a time. Run it multiple times for multiple packages.</p>
+  </div>
+
+  <div class="q">
+    <b>Does installing a package pull the image automatically?</b>
+    <p>Yes — the generated script's <code>docker run</code> command pulls the image itself if it isn't already present locally, same as running that command by hand.</p>
+  </div>
+
+  <div class="q">
+    <b>What happens if a package's underlying image was deleted or moved on its registry?</b>
+    <p>The install script will fail at the <code>docker run</code> step with a normal Docker pull error. The catalog doesn't currently re-verify that every image still resolves after it's added.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I see a package's exact command before installing it?</b>
+    <p>Yes — fetch <code>/scripts/&lt;name&gt;.txt</code> yourself (see <a href="docs.html">docs.html</a>) to read the full script before running <code>docker install &lt;name&gt;</code>.</p>
+  </div>
+
+  <div class="q">
+    <b>Does the catalog include Kubernetes manifests?</b>
+    <p>No. Every entry is a single <code>docker run</code> invocation — no Compose files, Helm charts, or Kubernetes YAML.</p>
+  </div>
+
+  <div class="q">
+    <b>Why "docker install" instead of a separate CLI tool?</b>
+    <p>So there's nothing new to remember or install separately — if you already know <code>docker</code>, you already know the interface. It's meant to feel like it should have always been part of Docker.</p>
+  </div>
+
+  <div class="q">
+    <b>Is there a <code>docker uninstall</code>?</b>
+    <p>Not currently. You'd remove the container the same way you would any other: <code>docker stop &lt;name&gt;</code> then <code>docker rm &lt;name&gt;</code>.</p>
+  </div>
+
+  <div class="q">
+    <b>Is there a <code>docker update &lt;name&gt;</code> to re-pull the latest image?</b>
+    <p>Not yet. For now, re-run the install script manually, or <code>docker pull</code> the image and recreate the container yourself.</p>
+  </div>
+
+  <div class="q">
+    <b>Does the patch modify my Docker daemon configuration?</b>
+    <p>No. It only replaces the <code>docker</code> CLI binary with a wrapper; the daemon itself (<code>dockerd</code>) and its configuration are untouched.</p>
+  </div>
+
+  <div class="q">
+    <b>Will installing the patch affect my existing containers?</b>
+    <p>No — existing containers keep running exactly as they were. The patch only affects how the <code>docker</code> command behaves going forward.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I pin a specific image tag instead of always getting <code>:latest</code>?</b>
+    <p>Not through the catalog directly today — fetch the script text, edit the tag yourself, and run it manually if you need a pinned version.</p>
+  </div>
+
+  <div class="q">
+    <b>Does dockerpatch collect usage analytics?</b>
+    <p>The server logs requests for its own operation (debugging, catching abuse), but there's no separate analytics/tracking pipeline built into the CLI or client.</p>
+  </div>
+
+  <div class="q">
+    <b>Is dockerpatch affiliated with Docker, Inc.?</b>
+    <p>No. It's an independent, unofficial wrapper around the Docker CLI.</p>
+  </div>
+
+  <div class="q">
+    <b>Why isn't the package I want in the catalog?</b>
+    <p>Either it hasn't been discovered yet by the automated GitHub-search process, or it got filtered out as junk/malformed. Submit it yourself via <a href="submit.html">submit.html</a>.</p>
+  </div>
+
+  <div class="q">
+    <b>How often does the catalog get new packages?</b>
+    <p>Whenever the discovery process is run manually — there's no fixed schedule.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I ask for a package I submitted to be removed?</b>
+    <p>There's no self-service removal — this isn't something the current tooling automates, so it'd need to be handled manually.</p>
+  </div>
+
+  <div class="q">
+    <b>What happens if two catalog packages point at the same underlying image?</b>
+    <p>The discovery process dedupes new finds against known images before adding them, but pre-existing near-duplicates (same tool, different source names) can still occasionally slip through and get cleaned up in a later pass.</p>
+  </div>
+
+  <div class="q">
+    <b>Could junk packages ever get re-added after a cleanup pass?</b>
+    <p>Only if the same repo turns up again in a fresh discovery run and the current junk filters don't happen to catch that particular pattern. The filters improve over time but aren't exhaustive.</p>
+  </div>
+
+  <div class="q">
+    <b>Does submit.html require a GitHub account?</b>
+    <p>No — it only reads public repo data via GitHub's API through a private proxy; you don't authenticate as yourself.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I submit a private repo?</b>
+    <p>No — the search proxy only has access to what GitHub's public code-search API can see, which excludes private repositories.</p>
+  </div>
+
+  <div class="q">
+    <b>What if my repo's <code>docker run</code> command spans multiple lines with backslashes?</b>
+    <p>That's handled — both the automated discovery process and the submit flow parse backslash-continued multi-line commands, not just single-line ones.</p>
+  </div>
+
+  <div class="q">
+    <b>Why does every install script echo "Installing..." and "...installed"?</b>
+    <p>Just visible feedback so you can tell the script actually ran and reached the end, rather than silently doing nothing on failure.</p>
+  </div>
+
+  <div class="q">
+    <b>Does <code>docker install</code> require <code>sudo</code>?</b>
+    <p>Only if your regular <code>docker</code> usage already requires <code>sudo</code> on your system — the wrapper doesn't change your existing permission model.</p>
+  </div>
+
+  <div class="q">
+    <b>Is there a native Windows build (not via WSL2)?</b>
+    <p>Not currently — Windows support goes through WSL2 running a Linux environment.</p>
+  </div>
+
+  <div class="q">
+    <b>What Go version is needed to build the patch from source?</b>
+    <p>Whatever's current when you build — check <code>patch/go.mod</code> in the repository for the exact minimum version pinned.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I build <code>install.sh</code>'s result from source instead of piping curl to bash?</b>
+    <p>Yes — clone the repo, <code>cd patch && go build</code>, then manually rename your existing <code>docker</code> binary to <code>docker-real</code> and put the built wrapper in its place.</p>
+  </div>
+
+  <div class="q">
+    <b>Does the wrapper break <code>docker-compose</code>?</b>
+    <p>No — <code>compose</code> isn't the intercepted subcommand, so it passes straight through to the real Docker CLI/plugin unmodified.</p>
+  </div>
+
+  <div class="q">
+    <b>Does the wrapper break <code>docker buildx</code>?</b>
+    <p>No, same reasoning — only the literal <code>install</code> subcommand is intercepted; everything else, including <code>buildx</code>, goes straight to <code>docker-real</code>.</p>
+  </div>
+
+  <div class="q">
+    <b>What happens if I run <code>install.sh</code> twice?</b>
+    <p>The second run will find <code>docker-real</code> already present and refuse to proceed rather than risk wrapping the wrapper.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I use dockerpatch on an air-gapped machine?</b>
+    <p>No — both the catalog lookup and the install script execution require live network access to the hosted server. There's no offline/cached mode.</p>
+  </div>
+
+  <div class="q">
+    <b>Why is the site dark-themed only?</b>
+    <p>Just a design choice — there's no light theme toggle currently.</p>
+  </div>
+
+  <div class="q">
+    <b>Is there a way to suppress the "installed" confirmation message?</b>
+    <p>Not as a CLI flag — you'd need to edit the specific package's script yourself if you want quieter output.</p>
+  </div>
+
+  <div class="q">
+    <b>What is the install-id actually used for?</b>
+    <p>It's a deterministic short identifier (first 8 bytes of <code>sha256(name)</code>) for referencing a package outside the normal name-based flow — mainly useful for <a href="findinstalls.html">findinstalls.html</a>-style lookups.</p>
+  </div>
+
+  <div class="q">
+    <b>Does findinstalls.html work offline?</b>
+    <p>No — it queries the live catalog server the same way the CLI does.</p>
+  </div>
+
+  <div class="q">
+    <b>Does dockerpatch verify image signatures or checksums?</b>
+    <p>No — it runs the same <code>docker run</code> command you'd run yourself, with the same trust model as pulling any image directly from its registry.</p>
+  </div>
+
+  <div class="q">
+    <b>What happens if the tunnel goes down mid-install?</b>
+    <p>The script-fetch step will fail with a network error. Nothing partially applies — either the full script is fetched and run, or nothing runs at all.</p>
+  </div>
+
+  <div class="q">
+    <b>Is there a status page for server uptime?</b>
+    <p>Not currently — there's no separate status dashboard beyond the server actually responding to requests.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I mirror the catalog to my own CDN?</b>
+    <p>Nothing stops you from polling <code>/api/list</code> and <code>/scripts/&lt;name&gt;.txt</code> yourself and re-serving them, but there's no built-in mirroring/export feature.</p>
+  </div>
+
+  <div class="q">
+    <b>Why not just search Docker Hub directly instead of using this catalog?</b>
+    <p>Docker Hub search finds images, not ready-to-run commands with the right ports/volumes/env vars already worked out — that's the actual value of a catalog entry here.</p>
+  </div>
+
+  <div class="q">
+    <b>How is this different from an Awesome-Selfhosted-style list?</b>
+    <p>Those are curated reading lists you browse manually. This is meant to be actionable from the terminal directly — <code>docker install &lt;name&gt;</code> and it's running, no copy-pasting a command from a README.</p>
+  </div>
+
+  <div class="q">
+    <b>Does the categorizer use an LLM or AI call?</b>
+    <p>No — it's plain keyword/heuristic matching against the name and description, plus a lookup against the source repo's real GitHub topics where available. No AI API calls involved.</p>
+  </div>
+
+  <div class="q">
+    <b>Are non-Latin-script tools excluded from the catalog entirely?</b>
+    <p>Entries with non-Latin-script descriptions/names get filtered at discovery time, since the resulting catalog text would be unusable for most users browsing in English — this is a practical filter on the catalog text, not a judgment on the tools themselves.</p>
+  </div>
+
+  <div class="q">
+    <b>What happens to a submitted package that gets rejected as junk?</b>
+    <p>It simply isn't added — no partial entry is created, and nothing is retained from a rejected submission.</p>
+  </div>
+
+  <div class="q">
+    <b>Can dockerpatch be used inside a CI pipeline?</b>
+    <p>Nothing prevents it technically (it's just shell scripts calling <code>docker run</code>), but it isn't designed or tested for unattended CI use — treat it as an interactive/manual tool for now.</p>
+  </div>
+
+  <div class="q">
+    <b>Where do I report a bug?</b>
+    <p>Open an issue on <a href="https://github.com/Luishae07/dockerpatch">the GitHub repository</a>.</p>
+  </div>
 </div>
 </body>
 </html>
