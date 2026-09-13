@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FAQ — dockerpatch</title>
+<style>
+:root{
+  --bg:#0a0c11; --card:#141821; --card-hover:#181d28;
+  --border:#242a36; --border-hover:#323a4a;
+  --txt:#eef1f7; --sub:#8b93a6; --sub2:#5c6479;
+  --acc:#6b8cff; --acc2:#9b6bff;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(107,140,255,0.14), transparent 60%),
+    radial-gradient(1000px 500px at 90% 10%, rgba(155,107,255,0.12), transparent 60%),
+    var(--bg);
+  padding:48px 20px 80px;
+}
+.wrap{max-width:720px; margin:0 auto;}
+h1{font-size:26px; margin:0 0 8px; font-weight:700;}
+.sub{color:var(--sub); font-size:14px; margin:0 0 32px; line-height:1.5;}
+a{color:var(--acc);}
+.back{color:var(--sub); font-size:12.5px; text-decoration:none; display:inline-block; margin-bottom:20px;}
+.back:hover{color:var(--txt);}
+.q{
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:16px 18px; margin-bottom:12px;
+}
+.q b{color:var(--txt); font-size:14.5px; display:block; margin-bottom:6px;}
+.q p{color:var(--sub); font-size:13.5px; line-height:1.65; margin:0;}
+.q code{font-family:"SF Mono",ui-monospace,monospace; font-size:.92em; color:var(--txt);}
+.q pre{
+  background:#0d0f15; border:1px solid var(--border); border-radius:10px;
+  padding:10px 12px; font-family:"SF Mono",ui-monospace,monospace; font-size:12.5px;
+  overflow-x:auto; margin:8px 0 0;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; back to dockerpatch</a>
+  <h1>FAQ</h1>
+  <p class="sub">Common questions about dockerpatch. See <a href="docs.html">docs.html</a> for full API/architecture reference.</p>
+
+  <div class="q">
+    <b>Does this replace Docker?</b>
+    <p>No. It wraps your existing <code>docker</code> binary. Every subcommand except <code>install</code> is passed straight through to the real binary unmodified, regardless of your installed Docker version.</p>
+  </div>
+
+  <div class="q">
+    <b>Is it safe to run an install script without reviewing it first?</b>
+    <p><code>docker install &lt;name&gt;</code> fetches and runs a published <code>docker run</code> command over HTTPS. If you want to review it first, fetch <code>/scripts/&lt;name&gt;.txt</code> yourself before running.</p>
+  </div>
+
+  <div class="q">
+    <b>A script is asking me to type a password/token — is that normal?</b>
+    <p>Yes. Scripts that need a real credential (a database password, an API key, etc.) prompt for it interactively at install time rather than shipping a hardcoded placeholder value in the script text. Nothing is sent anywhere except straight into the <code>docker run</code> command as an environment variable.</p>
+  </div>
+
+  <div class="q">
+    <b>Why does the server URL keep changing?</b>
+    <p>The hosted catalog server runs behind a Cloudflare quick tunnel, which issues a new hostname on every restart. <code>tunnel-url.txt</code> at the repo root always reflects the current one — clients fetch it at request time instead of hardcoding a URL.</p>
+  </div>
+
+  <div class="q">
+    <b>Can I run my own catalog server instead of the hosted one?</b>
+    <p>The server component isn't published in this repository (kept private, not meant to be run by third parties as-is). If you want a self-hosted catalog, you'd need to write your own server implementing the same three endpoints documented in <a href="docs.html#api-reference">docs.html</a>: <code>/api/list</code>, <code>/api/info/&lt;name&gt;</code>, and <code>/scripts/&lt;name&gt;.txt</code>.</p>
+  </div>
+
+  <div class="q">
+    <b>How does <a href="submit.html">submit.html</a> decide what's junk?</b>
+    <p>New packages (both from the automated GitHub-search discovery process and manual submissions) are filtered for: non-Latin-script or placeholder-style descriptions, generic scaffold/coursework names, image tokens that aren't real pullable images, and names over 20 characters. None of this is perfect — it's a heuristic filter, not manual curation.</p>
+  </div>
+
+  <div class="q">
+    <b>I got <code>unsupported protocol scheme ""</code> — what does that mean?</b>
+    <p>Your cached tunnel URL is stale. Re-run the install one-liner to refetch <code>tunnel-url.txt</code>.</p>
+  </div>
+
+  <div class="q">
+    <b>I got <code>package not found</code>.</b>
+    <p>Either the name has a typo, or the package was renamed/removed since you last checked. Run <code>docker install</code> with no arguments to see the current list.</p>
+  </div>
+
+  <div class="q">
+    <b>submit.html is stuck on "Searching GitHub..."</b>
+    <p>GitHub's unauthenticated code-search API is limited to 10 requests/minute. Wait a minute and try again.</p>
+  </div>
+
+  <div class="q">
+    <b>How do I remove the patch?</b>
+    <p>Delete the wrapper binary and rename <code>docker-real</code> back to <code>docker</code>. See <a href="docs.html">docs.html</a> for the exact paths.</p>
+  </div>
+</div>
+</body>
+</html>
