@@ -209,6 +209,32 @@ pre{
     <p>The catalog you see today is not the catalog you'll see next month. Cleanup passes run periodically to catch things that slipped through earlier filters — a placeholder that looked plausible, a description in a script that a shell couldn't parse, a name collision between two unrelated repos. When something like that is found, it's removed and the fix is folded back into the filter itself, so the same mistake doesn't get re-added by a future discovery run. The goal isn't a perfect catalog on day one; it's one that keeps getting more trustworthy over time.</p>
   </section>
 
+  <section>
+    <h2>The full pipeline, start to finish</h2>
+    <p>Nothing in the catalog appears by magic. Here's the actual path a package takes before <code>docker install &lt;name&gt;</code> can return it:</p>
+    <p><b style="color:var(--txt)">1. Discovery.</b> An automated pass searches GitHub for real, already-committed <code>docker run</code> commands — not templates, not documentation snippets, actual commands someone wrote to run their own project. Some passes target broad GitHub code search; others go straight to maintainers who publish many images with documented run examples in their own repos.</p>
+    <p><b style="color:var(--txt)">2. Junk filtering.</b> Every candidate is checked for the failure modes that have actually shown up in practice: non-Latin-script descriptions that wouldn't render usefully, coursework/tutorial/bootcamp repos that aren't real deployable services, hash-like or over-long names, commands with unfilled placeholder tokens instead of real values, and scripts with malformed quoting that a shell couldn't run as-is.</p>
+    <p><b style="color:var(--txt)">3. Existence verification.</b> The image itself gets checked against its actual registry — Docker Hub's API for Hub-hosted images, or trusted directly when it's a maintainer's own published image on another registry. A README claiming an image exists isn't good enough; something has to confirm it.</p>
+    <p><b style="color:var(--txt)">4. Catalog write.</b> Only after clearing all of the above does an entry get a name, a category, a description, and a generated install-id, and land in the live catalog that <code>docker install</code> and the Explore page both read from.</p>
+    <p><b style="color:var(--txt)">5. Ongoing re-scan.</b> The whole catalog gets periodically re-checked, not just new entries — because a filter written today can catch something that slipped through last month, and old entries deserve the same bar as new ones.</p>
+  </section>
+
+  <section>
+    <h2>More before/after, across different kinds of apps</h2>
+    <p><b style="color:var(--txt)">A database.</b> Before: you need Postgres for something, so you look up the official image, figure out which env vars set the username/password/database name, decide on a volume so your data survives a restart, and only then run it. After: <code>docker install postgres-official</code> — the volume and sane defaults are already wired in; you're prompted only for the password.</p>
+    <p><b style="color:var(--txt)">A monitoring stack piece.</b> Before: you want Uptime Kuma, find the repo, notice it needs a persistent volume for its SQLite state or your monitors vanish on restart, copy the command, fix the port. After: <code>docker install uptimekuma-official</code> — the volume's already there.</p>
+    <p><b style="color:var(--txt)">Something obscure.</b> Before: a niche self-hosted tool with a README that buries its Docker instructions under three paragraphs of unrelated setup, and the actual command has a typo'd flag you have to notice yourself. After: the catalog entry is the working command that was extracted and verified, typo-free, because it had to parse and resolve to a real image before it was ever added.</p>
+  </section>
+
+  <section>
+    <h2>Questions people actually ask</h2>
+    <p><b style="color:var(--txt)">Is this safe to run on a production box?</b> It's exactly as safe as running the underlying <code>docker run</code> command yourself — because that's all it does. Read the script first via <code>/scripts/&lt;name&gt;.txt</code> if you want to verify before trusting it.</p>
+    <p><b style="color:var(--txt)">What if a package stops working after an image update?</b> Nothing is cached client-side, so a fix to the catalog entry is live the moment it's pushed — no waiting on a client update or a new release.</p>
+    <p><b style="color:var(--txt)">Can I add something that isn't in the catalog yet?</b> Yes — <a href="submit.html">submit.html</a> takes a specific repo directly, which is faster than waiting for the next discovery pass to happen to find it.</p>
+    <p><b style="color:var(--txt)">Does dockerpatch phone home or track installs?</b> The client does exactly three things per install: fetch the catalog, resolve the name, run the script. There's no telemetry layer beyond that.</p>
+    <p><b style="color:var(--txt)">Why not just use Docker Compose for everything?</b> You still can — nothing about dockerpatch replaces Compose for coordinated multi-service stacks. This solves the much more common case of "I want to try this one thing right now" without writing or finding a compose file for it.</p>
+  </section>
+
   <div class="cta">
     <a href="index.html">Browse the catalog &rarr;</a>
   </div>
