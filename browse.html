@@ -9,10 +9,25 @@
   --blue:#1d63ed; --blue-dark:#003e91; --blue-light:#e9f2ff;
   --bg:#f4f5f7; --card:#ffffff; --border:#e2e5ea;
   --txt:#0b1c2c; --sub:#5b6b7c; --sub2:#8894a3;
+  --code-bg:#0b1c2c; --code-txt:#c9f0ff;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --blue:#4f86ff; --blue-dark:#0a1120; --blue-light:#152238;
+    --bg:#0a0e14; --card:#131a24; --border:#232c3a;
+    --txt:#e8edf4; --sub:#93a1b3; --sub2:#5f6d80;
+    --code-bg:#000; --code-txt:#8fe0ff;
+  }
+}
+:root[data-theme="dark"]{
+  --blue:#4f86ff; --blue-dark:#0a1120; --blue-light:#152238;
+  --bg:#0a0e14; --card:#131a24; --border:#232c3a;
+  --txt:#e8edf4; --sub:#93a1b3; --sub2:#5f6d80;
+  --code-bg:#000; --code-txt:#8fe0ff;
 }
 *{box-sizing:border-box;}
 body{
-  margin:0; min-height:100vh; color:var(--txt); background:var(--bg);
+  margin:0; min-height:100vh; color:var(--txt); background:var(--bg); transition:background .15s, color .15s;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 }
 .navbar{
@@ -98,17 +113,22 @@ body{
 .modal .mdesc{color:var(--sub); font-size:14px; margin-bottom:4px;}
 .modal .mcat{color:var(--sub2); font-size:11px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:16px;}
 .modal .cmdbox{
-  background:var(--txt); color:#c9f0ff; border-radius:8px; padding:12px 14px;
+  background:var(--code-bg); color:var(--code-txt); border-radius:8px; padding:12px 14px;
   font-family:"SF Mono",ui-monospace,monospace; font-size:13px; margin-bottom:16px; word-break:break-all;
 }
 .modal pre{
   background:var(--bg); border:1px solid var(--border); border-radius:10px;
-  padding:14px; font-size:12px; line-height:1.5; overflow-x:auto; color:#33414f;
+  padding:14px; font-size:12px; line-height:1.5; overflow-x:auto; color:var(--sub);
   font-family:"SF Mono",ui-monospace,monospace; white-space:pre-wrap;
 }
 .closebtn{
   float:right; background:none; border:none; color:var(--sub2); font-size:22px; cursor:pointer; line-height:1;
 }
+.themebtn{
+  background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:6px;
+  padding:7px 10px; font-size:14px; cursor:pointer; flex-shrink:0; margin-left:auto;
+}
+.themebtn:hover{background:rgba(255,255,255,0.18);}
 </style>
 </head>
 <body>
@@ -123,6 +143,7 @@ body{
     <a href="faq.html">FAQ</a>
     <a href="https://github.com/Luishae07/dockerpatch">GitHub</a>
   </div>
+  <button class="themebtn" id="themeBtn">🌙</button>
 </div>
 
 <div class="hero">
@@ -249,6 +270,19 @@ async function init(){
   render();
 }
 document.getElementById('q').addEventListener('input', render);
+
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('dp-theme', t);
+  document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+}
+const savedTheme = localStorage.getItem('dp-theme') ||
+  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+applyTheme(savedTheme);
+document.getElementById('themeBtn').addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
 init();
 </script>
 </body>
