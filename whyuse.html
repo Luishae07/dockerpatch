@@ -54,9 +54,30 @@ pre{
   color:#0a0c11; font-weight:700; font-size:13.5px; text-decoration:none;
   padding:10px 22px; border-radius:10px;
 }
+.navbar{
+  background:#0a1120; display:flex; align-items:center; gap:2px;
+  padding:0 20px; height:52px; position:sticky; top:0; z-index:20;
+  margin:-48px -20px 40px; overflow-x:auto; border-bottom:1px solid var(--border);
+}
+.navbar a{
+  color:var(--sub); text-decoration:none; font-size:13px; font-weight:600;
+  padding:8px 12px; border-radius:6px; white-space:nowrap; transition:background .12s, color .12s;
+}
+.navbar a:hover{background:rgba(255,255,255,0.06); color:var(--txt);}
+.navbar a.active{color:#fff; background:linear-gradient(135deg,var(--acc),var(--acc2));}
 </style>
 </head>
 <body>
+<div class="navbar">
+  <a href="index.html">Home</a>
+  <a href="browse.html">Explore</a>
+  <a href="findinstalls.html">Find install-id</a>
+  <a href="submit.html">Submit repo</a>
+  <a href="docs.html">Docs</a>
+  <a href="whyuse.html" class="active">Why dockerpatch</a>
+  <a href="faq.html">FAQ</a>
+  <a href="https://github.com/Luishae07/dockerpatch">GitHub</a>
+</div>
 <div class="wrap">
   <a class="back" href="index.html">&larr; back to dockerpatch</a>
   <h1>Why dockerpatch?</h1>
@@ -166,6 +187,26 @@ pre{
   <section>
     <h2>Built for the way people actually self-host</h2>
     <p>Most self-hosters don't run one carefully-planned stack — they try things. A new media server one weekend, a monitoring dashboard the next, a note-taking app after that. dockerpatch is built around that reality: low commitment per try, a real working command every time, and a catalog wide enough that the next thing you want to try is probably already in it.</p>
+  </section>
+
+  <section>
+    <h2>How new entries get verified before they show up</h2>
+    <p>Automated discovery finds a lot of candidates, and not all of them are real. Before anything lands in the live catalog, each candidate image gets checked against its actual registry (Docker Hub's API, or the specific registry it's hosted on) to confirm the image genuinely exists — not just that a README <i>said</i> it does. Anything that 404s, uses a placeholder token like <code>your-registry</code> or <code>&lt;path&gt;</code> instead of a real value, or is written in a script that a shell couldn't actually execute cleanly, gets rejected before it's ever visible to you.</p>
+  </section>
+
+  <section>
+    <h2>Browse it like a real catalog, not just a CLI</h2>
+    <p>If you'd rather look before you type, <a href="browse.html">the Explore page</a> is a full visual catalog browser — search by name or description, filter by category in the sidebar, and click any package to read its exact install script before running anything. It's the same live data <code>docker install</code> uses, just laid out for scanning instead of guessing a name cold.</p>
+  </section>
+
+  <section>
+    <h2>Multiple independent sources feed the same catalog</h2>
+    <p>Beyond the general GitHub search pass, dockerpatch also pulls in bulk from maintainers who publish dozens or hundreds of images with real, documented <code>docker run</code> examples in their own READMEs — the kind of source where "does this image exist" was never in question to begin with. Every batch still goes through the same existence-check and junk-filter pipeline as everything else; a trusted source skips nothing, it just starts from a higher base rate of real, working entries.</p>
+  </section>
+
+  <section>
+    <h2>This is still an active project, not a snapshot</h2>
+    <p>The catalog you see today is not the catalog you'll see next month. Cleanup passes run periodically to catch things that slipped through earlier filters — a placeholder that looked plausible, a description in a script that a shell couldn't parse, a name collision between two unrelated repos. When something like that is found, it's removed and the fix is folded back into the filter itself, so the same mistake doesn't get re-added by a future discovery run. The goal isn't a perfect catalog on day one; it's one that keeps getting more trustworthy over time.</p>
   </section>
 
   <div class="cta">
