@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Browse — dockerpatch</title>
+<style>
+:root{
+  --bg:#0a0c11; --card:#141821; --card-hover:#181d28;
+  --border:#242a36; --border-hover:#323a4a;
+  --txt:#eef1f7; --sub:#8b93a6; --sub2:#5c6479;
+  --acc:#6b8cff; --acc2:#9b6bff;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(107,140,255,0.14), transparent 60%),
+    radial-gradient(1000px 500px at 90% 10%, rgba(155,107,255,0.12), transparent 60%),
+    var(--bg);
+  padding:32px 20px 80px;
+}
+.wrap{max-width:920px; margin:0 auto;}
+.brand{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px;}
+.brand-mark{
+  width:36px; height:36px; border-radius:10px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; box-shadow:0 6px 20px rgba(107,140,255,0.35);
+}
+h1{font-size:22px; margin:0; font-weight:700; letter-spacing:-0.3px;}
+.sub{text-align:center; color:var(--sub); font-size:13.5px; margin:0 0 24px;}
+.searchbar{
+  display:flex; background:var(--card); border:1px solid var(--border);
+  border-radius:14px; max-width:520px; margin:0 auto 10px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.searchbar:focus-within{border-color:var(--acc); box-shadow:0 0 0 4px rgba(107,140,255,0.14);}
+.searchbar svg{flex-shrink:0; margin:0 4px 0 16px; align-self:center; opacity:.45;}
+input{
+  flex:1; padding:14px 12px; border:none; background:transparent;
+  color:var(--txt); font-size:14.5px; outline:none;
+}
+input::placeholder{color:var(--sub2);}
+.catbar{
+  display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:26px;
+}
+.catbtn{
+  padding:6px 12px; border-radius:20px; border:1px solid var(--border);
+  background:var(--card); color:var(--sub); font-size:12.5px; cursor:pointer;
+  transition:all .12s;
+}
+.catbtn:hover{border-color:var(--border-hover); color:var(--txt);}
+.catbtn.active{background:linear-gradient(135deg,var(--acc),var(--acc2)); color:#fff; border-color:transparent;}
+.count{text-align:center; color:var(--sub2); font-size:12px; margin-bottom:18px;}
+.grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px;
+}
+.pkg{
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  padding:16px 18px; cursor:pointer; transition:all .12s;
+}
+.pkg:hover{background:var(--card-hover); border-color:var(--border-hover); transform:translateY(-1px);}
+.pkg .name{font-size:15px; font-weight:700; margin-bottom:5px; display:flex; align-items:center; gap:7px;}
+.pkg .name::before{
+  content:''; width:7px; height:7px; border-radius:50%;
+  background:linear-gradient(135deg,var(--acc),var(--acc2)); flex-shrink:0;
+}
+.pkg .desc{color:var(--sub); font-size:13px; line-height:1.4; margin-bottom:8px;}
+.pkg .cat{color:var(--sub2); font-size:11px; text-transform:uppercase; letter-spacing:.04em;}
+.loading{color:var(--sub); text-align:center; padding:60px 0; font-size:14px;}
+
+.overlay{
+  position:fixed; inset:0; background:rgba(5,6,9,0.72); backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center; padding:20px; z-index:10;
+}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--card); border:1px solid var(--border); border-radius:18px;
+  max-width:640px; width:100%; max-height:80vh; overflow-y:auto; padding:26px 28px;
+}
+.modal h2{margin:0 0 4px; font-size:20px;}
+.modal .mdesc{color:var(--sub); font-size:14px; margin-bottom:4px;}
+.modal .mcat{color:var(--sub2); font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:16px;}
+.modal .cmd{
+  background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  padding:12px 14px; font-family:"SF Mono",ui-monospace,monospace; font-size:13px;
+  color:var(--acc); margin-bottom:16px; word-break:break-all;
+}
+.modal pre{
+  background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  padding:14px; font-size:12px; line-height:1.5; overflow-x:auto; color:var(--sub);
+  font-family:"SF Mono",ui-monospace,monospace; white-space:pre-wrap;
+}
+.closebtn{
+  float:right; background:none; border:none; color:var(--sub); font-size:20px;
+  cursor:pointer; line-height:1;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="brand-mark">📦</div><h1>dockerpatch catalog</h1></div>
+  <p class="sub">Browse, search, and click any package to see its install script</p>
+  <div class="searchbar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="q" placeholder="Search packages..." autocomplete="off" spellcheck="false">
+  </div>
+  <div class="catbar" id="catbar"></div>
+  <div class="count" id="count"></div>
+  <div id="grid" class="grid"><div class="loading">Loading catalog…</div></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+let PKGS = [];
+let BASE = '';
+let activeCat = 'All';
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function render(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const grid = document.getElementById('grid');
+  let filtered = PKGS.filter(p => activeCat === 'All' || p.category === activeCat);
+  if (q){
+    filtered = filtered.filter(p =>
+      p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q)
+    );
+  }
+  document.getElementById('count').textContent = `${filtered.length} of ${PKGS.length} packages`;
+  if (!filtered.length){
+    grid.innerHTML = '<div class="loading">No matches.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(p => `
+    <div class="pkg" data-name="${esc(p.name)}">
+      <div class="name">${esc(p.name)}</div>
+      <div class="desc">${esc(p.description||'')}</div>
+      <div class="cat">${esc(p.category||'')}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.pkg').forEach(el => {
+    el.addEventListener('click', () => openModal(el.dataset.name));
+  });
+}
+
+function renderCatbar(){
+  const cats = ['All', ...new Set(PKGS.map(p => p.category).filter(Boolean))].sort((a,b)=> a==='All'?-1:a.localeCompare(b));
+  const bar = document.getElementById('catbar');
+  bar.innerHTML = cats.map(c =>
+    `<button class="catbtn ${c===activeCat?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`
+  ).join('');
+  bar.querySelectorAll('.catbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCat = btn.dataset.cat;
+      renderCatbar();
+      render();
+    });
+  });
+}
+
+async function openModal(name){
+  const pkg = PKGS.find(p => p.name === name);
+  const overlay = document.getElementById('overlay');
+  const modal = document.getElementById('modal');
+  modal.innerHTML = `
+    <button class="closebtn" id="closeBtn">&times;</button>
+    <h2>${esc(pkg.name)}</h2>
+    <div class="mdesc">${esc(pkg.description||'')}</div>
+    <div class="mcat">${esc(pkg.category||'')}</div>
+    <div class="cmd">docker install ${esc(pkg.name)}</div>
+    <pre id="scriptBody">Loading script…</pre>
+  `;
+  overlay.classList.add('show');
+  document.getElementById('closeBtn').addEventListener('click', closeModal);
+  try {
+    const info = await (await fetch(BASE + pkg.info_url)).text();
+    const script = await (await fetch(BASE + info.trim())).text();
+    document.getElementById('scriptBody').textContent = script;
+  } catch(e){
+    document.getElementById('scriptBody').textContent = 'Could not load script.';
+  }
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+}
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target.id === 'overlay') closeModal();
+});
+
+async function init(){
+  BASE = (await (await fetch('tunnel-url.txt')).text()).trim();
+  PKGS = await (await fetch(BASE + '/api/list')).json();
+  PKGS.sort((a,b) => a.name.localeCompare(b.name));
+  renderCatbar();
+  render();
+}
+document.getElementById('q').addEventListener('input', render);
+init();
+</script>
+</body>
+</html>
