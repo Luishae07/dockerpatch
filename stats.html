@@ -109,18 +109,68 @@ h1{font-size:26px; margin:0; font-weight:700; letter-spacing:-0.3px;}
         <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
         <div class="term-title">zsh — docker install</div>
       </div>
-      <div class="term-body">
-<span class="prompt">luisip@Luiss-MBP dockerpatch %</span> <span class="cmd">docker install postgres</span>
-dockerpatch: resolving tunnel URL...
-dockerpatch: fetching package list from https://towards-greater-iso-teaching.trycloudflare.com...
-dockerpatch: found postgres (install-id a942b37ccfaf5a81)
-dockerpatch: downloading install script from https://towards-greater-iso-teaching.trycloudflare.com/scripts/postgres.txt...
-dockerpatch: running install script for postgres...
-<span class="dim">Installing postgres (Relational database)...</span>
-Enter a value for POSTGRES_PASSWORD: <span class="cursor"></span>
-      </div>
+      <div class="term-body" id="termBody"></div>
     </div>
   </div>
 </div>
+<script>
+(function(){
+  const el = document.getElementById('termBody');
+  const staticLines = [
+    { html: '<span class="prompt">luisip@Luiss-MBP dockerpatch %</span> <span class="cmd">docker install postgres</span>', delay: 0 },
+    { html: 'dockerpatch: resolving tunnel URL...', delay: 300 },
+    { html: 'dockerpatch: fetching package list from https://towards-greater-iso-teaching.trycloudflare.com...', delay: 350 },
+    { html: 'dockerpatch: found postgres (install-id a942b37ccfaf5a81)', delay: 300 },
+    { html: 'dockerpatch: downloading install script from https://towards-greater-iso-teaching.trycloudflare.com/scripts/postgres.txt...', delay: 350 },
+    { html: 'dockerpatch: running install script for postgres...', delay: 300 },
+    { html: '<span class="dim">Installing postgres (Relational database)...</span>', delay: 400 },
+  ];
+  const finalLines = [
+    { html: '', delay: 250 },
+    { html: '<span class="ok">7cadac7dfafb7fcf1f35d6e53e753da85456a589c3442523bd58acb72b273198</span>', delay: 300 },
+    { html: '<span class="ok">postgres installed.</span>', delay: 200 },
+  ];
+
+  function appendLine(html){
+    const div = document.createElement('div');
+    div.innerHTML = html || '&nbsp;';
+    el.appendChild(div);
+  }
+
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+  async function typePassword(){
+    const line = document.createElement('div');
+    line.innerHTML = 'Enter a value for POSTGRES_PASSWORD: <span id="pwdMask"></span><span class="cursor"></span>';
+    el.appendChild(line);
+    const mask = line.querySelector('#pwdMask');
+    const pwdLength = 12;
+    for (let i = 0; i < pwdLength; i++){
+      await sleep(80 + Math.random()*90);
+      mask.textContent += '•';
+    }
+    await sleep(400);
+    line.querySelector('.cursor').style.opacity = '0';
+    await sleep(200);
+  }
+
+  async function run(){
+    el.innerHTML = '';
+    for (const l of staticLines){
+      await sleep(l.delay);
+      appendLine(l.html);
+    }
+    await sleep(300);
+    await typePassword();
+    for (const l of finalLines){
+      await sleep(l.delay);
+      appendLine(l.html);
+    }
+    await sleep(3000);
+    run();
+  }
+  run();
+})();
+</script>
 </body>
 </html>
