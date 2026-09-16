@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Catalog Stats — dockerpatch</title>
+<style>
+:root{
+  --bg:#0a0c11; --card:#141821; --card-hover:#181d28;
+  --border:#242a36; --border-hover:#323a4a;
+  --txt:#eef1f7; --sub:#8b93a6; --sub2:#5c6479;
+  --acc:#6b8cff; --acc2:#9b6bff;
+  --good:#4ade80; --bad:#f87171;
+  --term-bg:#0d0f15; --term-txt:#c9f0ff;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(107,140,255,0.14), transparent 60%),
+    radial-gradient(1000px 500px at 90% 10%, rgba(155,107,255,0.12), transparent 60%),
+    var(--bg);
+  padding:48px 20px 80px;
+}
+.wrap{max-width:900px; margin:0 auto;}
+.brand{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px;}
+.brand-mark{
+  width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; box-shadow:0 6px 20px rgba(107,140,255,0.35);
+}
+h1{font-size:26px; margin:0; font-weight:700; letter-spacing:-0.3px;}
+.sub{text-align:center; color:var(--sub); font-size:14.5px; margin:0 0 40px;}
+.disclaimer{
+  text-align:center; color:var(--sub2); font-size:11.5px; margin:0 0 40px;
+  text-transform:uppercase; letter-spacing:.04em;
+}
+
+.stats{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:48px;}
+@media (max-width:560px){ .stats{grid-template-columns:1fr;} }
+.stat{
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:24px 26px;
+}
+.stat .num{
+  font-size:40px; font-weight:800; letter-spacing:-1px; line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.stat.junk .num{color:var(--bad);}
+.stat.added .num{color:var(--good);}
+.stat .label{color:var(--sub); font-size:13.5px; margin-top:8px;}
+.stat .period{color:var(--sub2); font-size:11.5px; margin-top:2px; text-transform:uppercase; letter-spacing:.04em;}
+
+.section{margin:40px 0 0;}
+.section h2{font-size:16px; font-weight:700; margin:0 0 14px;}
+
+.terminal{
+  background:var(--term-bg); border:1px solid var(--border); border-radius:14px;
+  overflow:hidden;
+}
+.term-bar{
+  display:flex; align-items:center; gap:6px; padding:10px 14px;
+  background:#11141c; border-bottom:1px solid var(--border);
+}
+.term-dot{width:10px; height:10px; border-radius:50%;}
+.term-dot.r{background:#ff5f56;} .term-dot.y{background:#ffbd2e;} .term-dot.g{background:#27c93f;}
+.term-title{color:var(--sub2); font-size:12px; margin-left:8px; font-family:"SF Mono",ui-monospace,monospace;}
+.term-body{
+  padding:20px 22px; font-family:"SF Mono",ui-monospace,monospace;
+  font-size:13px; line-height:1.7; color:var(--term-txt);
+  white-space:pre-wrap; word-break:break-all;
+}
+.term-body .prompt{color:var(--sub);}
+.term-body .cmd{color:#fff;}
+.term-body .dim{color:var(--sub2);}
+.term-body .ok{color:var(--good);}
+.cursor{
+  display:inline-block; width:8px; height:15px; background:var(--term-txt);
+  vertical-align:middle; animation:blink 1s step-end infinite;
+}
+@keyframes blink{50%{opacity:0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="brand-mark">📦</div><h1>dockerpatch</h1></div>
+  <p class="sub">Catalog health, at a glance</p>
+  <p class="disclaimer">Illustrative figures — not live data</p>
+
+  <div class="stats">
+    <div class="stat junk">
+      <div class="num">200+</div>
+      <div class="label">junk packages removed</div>
+      <div class="period">per day</div>
+    </div>
+    <div class="stat added">
+      <div class="num">100+</div>
+      <div class="label">new packages added</div>
+      <div class="period">per day</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>What that looks like</h2>
+    <div class="terminal">
+      <div class="term-bar">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="term-title">zsh — docker install</div>
+      </div>
+      <div class="term-body">
+<span class="prompt">luisip@Luiss-MBP dockerpatch %</span> <span class="cmd">docker install postgres</span>
+dockerpatch: resolving tunnel URL...
+dockerpatch: fetching package list from https://towards-greater-iso-teaching.trycloudflare.com...
+dockerpatch: found postgres (install-id a942b37ccfaf5a81)
+dockerpatch: downloading install script from https://towards-greater-iso-teaching.trycloudflare.com/scripts/postgres.txt...
+dockerpatch: running install script for postgres...
+<span class="dim">Installing postgres (Relational database)...</span>
+Enter a value for POSTGRES_PASSWORD: <span class="cursor"></span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
