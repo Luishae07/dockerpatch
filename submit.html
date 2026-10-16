@@ -108,8 +108,12 @@ pre{
 </div>
 
 <script>
-const SERVER_URL = 'https://inspiration-passes-causes-four.trycloudflare.com';
-const DONTLOOK_URL = 'https://spot-tab-density-wider.trycloudflare.com';
+// The two server addresses change whenever their tunnels restart, so they are read from files next to this page.
+let SERVER_URL = '', DONTLOOK_URL = '';
+const urlsReady = Promise.all([
+  fetch('tunnel-url.txt', {cache: 'no-store'}).then(r => r.text()),
+  fetch('dontlook-url.txt', {cache: 'no-store'}).then(r => r.text()),
+]).then(([a, b]) => { SERVER_URL = a.trim().replace(/\/$/, ''); DONTLOOK_URL = b.trim().replace(/\/$/, ''); }).catch(() => {});
 let selectedRepo = null;
 let extractedBlock = null;
 
@@ -162,6 +166,7 @@ async function searchRepos(q){
 }
 
 async function selectRepo(fullName, description){
+  await urlsReady;
   selectedRepo = { fullName, description };
   el('step-search').classList.add('hidden');
   el('step-extract').classList.remove('hidden');
@@ -219,6 +224,7 @@ function showConfirm(fullName, block){
 }
 
 async function submitPackage(){
+  await urlsReady;
   const name = el('pkgName').value.trim().toLowerCase();
   const desc = el('pkgDesc').value.trim();
   el('submitBtn').disabled = true;
